@@ -17,38 +17,44 @@ namespace Compilador_L
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Digite o nome e extensão do arquivo");
-            var arquivo = Console.ReadLine();
+            //Console.WriteLine("Digite o nome e extensão do arquivo");
+            //var arquivo = Console.ReadLine();
 
-            if (File.Exists(arquivo))
-            {
+            //if (File.Exists(arquivo))
+            //{
 
-                if (arquivo.Substring(arquivo.Length - 2,1) == "." && arquivo.Substring(arquivo.Length - 1) == "l" || arquivo.Substring(arquivo.Length - 1) == "L")
-                {
-                    Stream entrada = File.Open(arquivo, FileMode.Open);
+            //    if (arquivo.Substring(arquivo.Length - 2,1) == "." && arquivo.Substring(arquivo.Length - 1) == "l" || arquivo.Substring(arquivo.Length - 1) == "L")
+            //    {
+            //        Stream entrada = File.Open(arquivo, FileMode.Open);
 
-                    StreamReader leitor = new StreamReader(entrada);
-                    string linha = leitor.ReadLine();
-                    while (linha != null)
-                    {
-                        //Console.WriteLine(linha);
-                        //linha = leitor.ReadLine();
-                        Console.WriteLine("compilado com sucesso.");
-                    }
-                    leitor.Close();
-                    entrada.Close();  
-                }
-                else
-                {
-                    Console.WriteLine(arquivo + " não compativel.");
-                }
-            }
-            else
-            {
-                Console.WriteLine(arquivo + " não encontrado.");
-            }
-            Console.WriteLine("Precione ENTER para sair.");
+            //        StreamReader leitor = new StreamReader(entrada);
+            //        string linha = leitor.ReadLine();
+            //        while (linha != null)
+            //        {
+            //            //Console.WriteLine(linha);
+            //            //linha = leitor.ReadLine();
+            //            Console.WriteLine("compilado com sucesso.");
+            //        }
+            //        leitor.Close();
+            //        entrada.Close();  
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine(arquivo + " não compativel.");
+            //    }
+            //}
+            //else
+            //{
+            //    Console.WriteLine(arquivo + " não encontrado.");
+            //}
+            //Console.WriteLine("Precione ENTER para sair.");
+            //Console.ReadKey();
+
+            TabelaSimbolos tb = new TabelaSimbolos();
+
+           Console.Write(tb.buscarEndereco("if"));
             Console.ReadKey();
+
         }
     }
 }

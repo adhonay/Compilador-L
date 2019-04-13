@@ -12,24 +12,26 @@ namespace Compilador_L
      * endereco
      * lexemas (são retirados do código fonte)
     */
-    class Simbolos
+    public class Simbolos
     {
-        private byte token { get; set; }
-        private string lexema { get; set; }
-        private int endereco { get; set; }
+        public byte token { get; set; }
+        public string lexema { get; set; }
+        public int endereco { get; set; }
 
         public Simbolos(string lexema, byte token)
         {
             this.lexema = lexema;
             this.token = token;
-            this.endereco = 0;
+            this.endereco = -1;
 
         }
 
-        public String toString()
+        public string toString()
         {
             return "Simbolo inserido {" + "lexema: " + lexema + ", token: " + token + ", endereco: " + endereco +  '}';
         }
+
+
 
     }
 
