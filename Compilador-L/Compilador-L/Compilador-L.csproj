@@ -49,6 +49,7 @@
     <Compile Include="AnalisadorLexico.cs" />
     <Compile Include="LC.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Simbolos.cs" />
     <Compile Include="TabelaSimbolos.cs" />
   </ItemGroup>
   <ItemGroup>
