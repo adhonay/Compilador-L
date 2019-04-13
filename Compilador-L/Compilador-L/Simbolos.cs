@@ -28,7 +28,12 @@ namespace Compilador_L
            // this.category = NO_CATEGORY;
            // this.type = NO_TYPE;
         }
-       
+
+        public String toString()
+        {
+            return "Simbolo inserido {" + "lexema: " + lexema + ", token: " + token + ", endereco: " + endereco +  '}';
+        }
+
     }
 
 
