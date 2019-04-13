@@ -9,17 +9,15 @@ namespace Compilador_L
 {
     public class TabelaSimbolos
     {
+        Dictionary<string, Simbolos> tabela;
 
-        public Hashtable TabelaSim()
+        public TabelaSimbolos()
         {
-            
-            Hashtable tabela = new Hashtable();
-            tabela.Add("teste", "ds");
-            tabela.Add("adhonay", 2);
-            return tabela;
-            
+            tabela = new Dictionary<string, Simbolos>();
+
+            tabela.Add("if", new Simbolos("if", 0));
+            tabela.Add("for", new Simbolos("for", 0));
         }
-        
         
     }
 }

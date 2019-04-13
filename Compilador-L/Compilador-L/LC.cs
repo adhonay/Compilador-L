@@ -17,32 +17,38 @@ namespace Compilador_L
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Digite o nome e extensão do arquivo:kkkkkkkkkkkkkkkk");
+            Console.WriteLine("Digite o nome e extensão do arquivo");
             var arquivo = Console.ReadLine();
 
             if (File.Exists(arquivo))
             {
-                //if (arquivo.(size - 2) == '.' && (arquivo.charAt(size - 1) == 'l' || arquivo.charAt(size - 1) == 'L'))
-                //{
+
+                if (arquivo.Substring(arquivo.Length - 2,1) == "." && arquivo.Substring(arquivo.Length - 1) == "l" || arquivo.Substring(arquivo.Length - 1) == "L")
+                {
                     Stream entrada = File.Open(arquivo, FileMode.Open);
 
-                StreamReader leitor = new StreamReader(entrada);
-                string linha = leitor.ReadLine();
-                while (linha != null)
-                {
-                    Console.WriteLine(linha);
-                    linha = leitor.ReadLine();
+                    StreamReader leitor = new StreamReader(entrada);
+                    string linha = leitor.ReadLine();
+                    while (linha != null)
+                    {
+                        //Console.WriteLine(linha);
+                        //linha = leitor.ReadLine();
+                        Console.WriteLine("compilado com sucesso.");
+                    }
+                    leitor.Close();
+                    entrada.Close();  
                 }
-                leitor.Close();
-                entrada.Close();
-
-                Console.WriteLine("Precione Enter para sair.");
-                Console.ReadKey();
+                else
+                {
+                    Console.WriteLine(arquivo + " não compativel.");
+                }
             }
             else
             {
-                Console.WriteLine(arquivo + " não existe!");
+                Console.WriteLine(arquivo + " não encontrado.");
             }
+            Console.WriteLine("Precione ENTER para sair.");
+            Console.ReadKey();
         }
     }
 }

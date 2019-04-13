@@ -15,18 +15,15 @@ namespace Compilador_L
     class Simbolos
     {
         private byte token { get; set; }
-        private String lexema { get; set; }
+        private string lexema { get; set; }
         private int endereco { get; set; }
-        //private byte categoria { get; set; }
-        //private byte tipo { get; set; }
 
-        public Simbolos(String lexema, byte token)
+        public Simbolos(string lexema, byte token)
         {
             this.lexema = lexema;
             this.token = token;
             this.endereco = 0;
-           // this.category = NO_CATEGORY;
-           // this.type = NO_TYPE;
+
         }
        
     }
