@@ -17,7 +17,7 @@ namespace Compilador_L
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Digite o nome e extensão do arquivo:");
+            Console.WriteLine("Digite o nome e extensão do arquivo:kkkkkkkkkkkkkkkk");
             var arquivo = Console.ReadLine();
 
             if (File.Exists(arquivo))
