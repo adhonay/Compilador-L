@@ -25,7 +25,12 @@ namespace Compilador_L
             this.endereco = 0;
 
         }
-       
+
+        public String toString()
+        {
+            return "Simbolo inserido {" + "lexema: " + lexema + ", token: " + token + ", endereco: " + endereco +  '}';
+        }
+
     }
 
 
