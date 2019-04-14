@@ -52,7 +52,9 @@ namespace Compilador_L
 
             TabelaSimbolos tb = new TabelaSimbolos();
 
-           Console.Write(tb.buscarEndereco("if"));
+           tb.inserirIdentificador("ifh");
+            tb.inserirIdentificador("adhonay");
+            tb.Listar();
             Console.ReadKey();
 
         }
