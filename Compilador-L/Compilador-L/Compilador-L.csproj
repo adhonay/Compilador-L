@@ -46,14 +46,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnalisadorLexico.cs" />
-    <Compile Include="LC.cs" />
+    <Compile Include="Compilador\AnalisadorLexico.cs" />
+    <Compile Include="Compilador\ContadorLinha.cs" />
+    <Compile Include="Compilador\Erro.cs" />
+    <Compile Include="Compilador\ExecCompilador.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Simbolos.cs" />
-    <Compile Include="TabelaSimbolos.cs" />
+    <Compile Include="Compilador\Simbolos.cs" />
+    <Compile Include="Compilador\TabelaSimbolos.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Documentos\Descrição\tp.pdf" />
+    <None Include="Documentos\Descrição\tp1.pdf" />
+    <None Include="Documentos\Descrição\tp2.pdf" />
+    <None Include="Documentos\Descrição\tp3.pdf" />
+    <None Include="Documentos\Descrição\tp4.pdf" />
+    <None Include="Documentos\Exemplos\exemplo1.l" />
+    <None Include="Documentos\Exemplos\exemplo2.l" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

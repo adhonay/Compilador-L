@@ -4,9 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Compilador_L
+namespace Compilador_L.Compilador
 {
-    class AnalisadorLexico
+   public class AnalisadorLexico
     {
+
+
+
+
     }
 }
