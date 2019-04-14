@@ -17,44 +17,45 @@ namespace Compilador_L.Compilador
     {
         static void Main(string[] args)
         {
-            //Console.WriteLine("Digite o nome e extensão do arquivo");
-            //var arquivo = Console.ReadLine();
+            Console.WriteLine("Digite o nome e extensão do arquivo");
+            var arquivo = "exemplo1.l";//Console.ReadLine();
 
-            //if (File.Exists(arquivo))
-            //{
+            if (File.Exists(arquivo))
+            {
 
-            //    if (arquivo.Substring(arquivo.Length - 2,1) == "." && arquivo.Substring(arquivo.Length - 1) == "l" || arquivo.Substring(arquivo.Length - 1) == "L")
-            //    {
-            //        Stream entrada = File.Open(arquivo, FileMode.Open);
+                if (arquivo.Substring(arquivo.Length - 2, 1) == "." && arquivo.Substring(arquivo.Length - 1) == "l" || arquivo.Substring(arquivo.Length - 1) == "L")
+                {
+                    Stream entrada = File.Open(arquivo, FileMode.Open);
+                    ContadorLinha ler = new ContadorLinha(entrada);
 
-            //        StreamReader leitor = new StreamReader(entrada);
-            //        string linha = leitor.ReadLine();
-            //        while (linha != null)
-            //        {
-            //            //Console.WriteLine(linha);
-            //            //linha = leitor.ReadLine();
-            //            Console.WriteLine("compilado com sucesso.");
-            //        }
-            //        leitor.Close();
-            //        entrada.Close();  
-            //    }
-            //    else
-            //    {
-            //        Console.WriteLine(arquivo + " não compativel.");
-            //    }
-            //}
-            //else
-            //{
-            //    Console.WriteLine(arquivo + " não encontrado.");
-            //}
-            //Console.WriteLine("Precione ENTER para sair.");
-            //Console.ReadKey();
+                    string linha = ler.ReadLine();
+                    while (linha != null)
+                    {
 
-            TabelaSimbolos tb = new TabelaSimbolos();
+                        if(linha == "  readln(nome);")
+                        {
+                            Erro.ErroLexico.Char(ler.numeroLinha);
+                            break;
+                        }
 
-           tb.inserirIdentificador("ifh");
-            tb.inserirIdentificador("adhonay");
-            tb.Listar();
+                        Console.WriteLine(linha);
+                       // Console.WriteLine(ler.numeroLinha);
+                        linha = ler.ReadLine();
+                        //Console.WriteLine("compilado com sucesso.");
+                    }
+                    ler.Close();
+                    entrada.Close();
+                }
+                else
+                {
+                    Console.WriteLine(arquivo + " não compativel.");
+                }
+            }
+            else
+            {
+                Console.WriteLine(arquivo + " não encontrado.");
+            }
+            Console.WriteLine("Precione ENTER para sair.");
             Console.ReadKey();
 
         }

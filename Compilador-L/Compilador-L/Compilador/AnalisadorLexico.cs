@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace Compilador_L.Compilador
 {
-    class AnalisadorLexico
+   public class AnalisadorLexico
     {
+
+
+
+
     }
 }
