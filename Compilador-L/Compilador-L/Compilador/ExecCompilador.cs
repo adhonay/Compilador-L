@@ -11,9 +11,9 @@ using System.Threading.Tasks;
  * Autores: Adhonay Júnior, Izabela Costa
  * Matricula: 504656, 498535
  **/
-namespace Compilador_L
+namespace Compilador_L.Compilador
 {
-    class LC
+    class ExecCompilador
     {
         static void Main(string[] args)
         {
