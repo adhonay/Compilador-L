@@ -8,9 +8,12 @@ using System.Threading.Tasks;
 namespace Compilador_L.Compilador
 {
     public class TabelaSimbolos
-    {
-        Dictionary<string, Simbolos> tabela;
-
+    { 
+        /*
+         * Dictionary corresponde a tupla: palavra chave - simbolo
+         * Instancias da classe simbolo recebe lexema e token
+         * Tokens palavras reservadas da linguagem:
+        */
         public static readonly byte CONST = 0;
         public static readonly byte VAR = 1;
         public static readonly byte INTEGER = 2;
@@ -47,11 +50,13 @@ namespace Compilador_L.Compilador
         public static readonly byte PORCENTAGEM = 33;
         public static readonly byte ABCOLCHETE = 34;
         public static readonly byte FECOLCHETE = 35;
-        
-
+        /*
+         * Identificador é inserido na tabela sob demanda,
+         */
         public static readonly byte ID = 36;
-        public static readonly byte CONSTANTE = 37;
         public static readonly byte EOF = Byte.MaxValue;
+
+        Dictionary<string, Simbolos> tabela;
 
         public TabelaSimbolos()
         {
