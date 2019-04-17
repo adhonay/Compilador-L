@@ -590,7 +590,55 @@ namespace Compilador_L.Compilador
                 }
 
             }
-            simbolo = new Simbolos(lexema, 50);
+
+            if (!EOF)// não for final do arquivo.
+            {
+                if (tbSimbolos.buscarSimbolo(lexema.ToLower()) != null)
+                {// Caso lexema já exista na tabela de simbolos
+                    simbolo = tbSimbolos.buscarSimbolo(lexema.ToLower());
+                }
+                else if (lexema[0] == '_' || lexema[0] == '.' || eLetra(lexema[0]))
+                {// adicionar identificador na tabela
+                    if(lexema.Length >= 255)
+                    {// validando tamanho identificador
+                        Erro.ErroLexico.Lexema(linha,lexema);
+                    }
+                    else
+                    {//inserindo na tabela
+                        simbolo = tbSimbolos.inserirIdentificador(lexema.ToLower());
+                    }
+                }
+                else if (lexema[0] == '"')
+                {// identificando string 
+                    if(lexema.Length >= 256)
+                    {// validando tamanho string
+                        Erro.ErroLexico.Lexema(linha,lexema);
+                    }
+                    else
+                    {
+                        lexema = '"'+lexema.Substring(1, lexema.Length - 2) + "$"+'"';
+                    }
+
+                    simbolo = new Simbolos(lexema, TabelaSimbolos.CONSTANTE);
+                }
+                else
+                {   //const hexadecimal ou alfanumérico('c') ou inteiro
+                    if (lexema.Length > 1 && lexema[1] == 'x' || lexema[0] == 39  || (-32768 <= int.Parse(lexema) && int.Parse(lexema) <= 32767))
+                    {
+                        simbolo = new Simbolos(lexema, TabelaSimbolos.CONSTANTE);
+                    }
+                    else
+                    { // ACHO QUE FALTA A VERIFICAÇÃO DO VETOR 4BYTES
+                        simbolo = new Simbolos(lexema, 111);
+                    }
+                }
+                
+            }
+            else
+            {// retonar eof para futuras validações. 
+                simbolo = new Simbolos("EOF", TabelaSimbolos.EOF);
+            }
+
             return simbolo;
 
         }

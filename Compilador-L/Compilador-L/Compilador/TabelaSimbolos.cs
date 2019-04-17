@@ -54,6 +54,7 @@ namespace Compilador_L.Compilador
          * Identificador é inserido na tabela sob demanda,
          */
         public static readonly byte ID = 36;
+        public static readonly byte CONSTANTE = 36;
         public static readonly byte EOF = Byte.MaxValue;
 
         Dictionary<string, Simbolos> tabela;

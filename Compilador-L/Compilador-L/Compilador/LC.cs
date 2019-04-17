@@ -34,17 +34,12 @@ namespace Compilador_L.Compilador
 
                     var teste = analisador.buscarProximoLexema(ler).lexema;
 
-                    while(teste!= null)
+                    while(teste!= "EOF")
                     {
-                        Console.WriteLine(teste);
-                       
+                        Console.WriteLine(teste);                       
                         teste = analisador.buscarProximoLexema(ler).lexema;
-                        if (teste == "\uffff")
-                        {
-                            break;
-                        }
                     }
-
+                    
                     Console.ReadKey();
 
                     //string linha = ler.ReadLine();
