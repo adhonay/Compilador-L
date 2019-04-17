@@ -10,9 +10,9 @@ namespace Compilador_L.Compilador
     {
        public struct ErroLexico
        {
-            public static void Char(int linha) {  Console.WriteLine (linha + ":caractere invalido.");}
-            public static void Lexema(int linha, string lex) { Console.WriteLine(linha + ":lexema nao identificado["+lex+"]"); }
-            public static void Arquivo(int linha) { Console.WriteLine(linha + ":fim de arquivo nao esperado.");}
+            public static void Char(int linha) {  Console.WriteLine (linha + ":caractere invalido."); Console.ReadKey(); Environment.Exit(0); }
+            public static void Lexema(int linha, string lex) { Console.WriteLine(linha + ":lexema não identificado["+lex+"]"); Console.ReadKey(); Environment.Exit(0); }
+            public static void Arquivo(int linha) { Console.WriteLine(linha + ":fim de arquivo não esperado."); Console.ReadKey(); Environment.Exit(0); }
        }
 
     }

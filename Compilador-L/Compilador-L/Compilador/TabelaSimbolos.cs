@@ -120,7 +120,7 @@ namespace Compilador_L.Compilador
             {
                 tabela.Add(lexema, new Simbolos(lexema, ID));
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Console.Write("Já foi adicionado um item com a mesma chave.");
             }
