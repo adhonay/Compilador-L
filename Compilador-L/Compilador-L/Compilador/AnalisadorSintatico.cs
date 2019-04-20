@@ -61,45 +61,49 @@ namespace Compilador_L.Compilador
 			}
 
 		}
-		// D -> (var (int|char) id [atribuiçao] | const id= [+|-] constante )
+		// D -> ( VAR {  (INT|CHAR) ID [ATR] {VIRGULA ID [ATR]}*  }+    |     const id= [+|-] constante )
 		public void D()
 		{
-			if(tokenE.token == TabelaSimbolos.VAR)
+			if (tokenE.token == TabelaSimbolos.VAR)
 			{
 				casaToken(TabelaSimbolos.VAR);
-				if(tokenE.token == TabelaSimbolos.INTEGER || tokenE.token == TabelaSimbolos.CHAR) 
+				do
 				{
-					casaToken(tokenE.token);
-				}
-				casaToken(TabelaSimbolos.ID);
-				if(tokenE.token == TabelaSimbolos.IGUAL || tokenE.token == TabelaSimbolos.ABCOLCHETE)
-				{
-					Atr();
-				}
-				while(tokenE.token == TabelaSimbolos.VIRGULA)
-				{
-					casaToken(TabelaSimbolos.VIRGULA);
+					if (tokenE.token == TabelaSimbolos.INTEGER)
+					{
+						casaToken(TabelaSimbolos.INTEGER);
+					}
+					else
+					{
+						casaToken(TabelaSimbolos.CHAR);
+					}
 					casaToken(TabelaSimbolos.ID);
-					if(tokenE.token == TabelaSimbolos.IGUAL || tokenE.token == TabelaSimbolos.ABCOLCHETE)
+					if (tokenE.token == TabelaSimbolos.IGUAL || tokenE.token == TabelaSimbolos.ABCOLCHETE)
 					{
 						Atr();
 					}
-				}
-				casaToken(TabelaSimbolos.PONTOVIRGULA);
+					while (tokenE.token == TabelaSimbolos.VIRGULA)
+					{
+						casaToken(TabelaSimbolos.VIRGULA);
+						casaToken(TabelaSimbolos.ID);
+						if (tokenE.token == TabelaSimbolos.IGUAL || tokenE.token == TabelaSimbolos.ABCOLCHETE)
+						{
+							Atr();
+						}
+					}
+					casaToken(TabelaSimbolos.PONTOVIRGULA);
 
-			}// D -> const id= [+|-] constante;
+				} while (tokenE.token == TabelaSimbolos.CHAR || tokenE.token == TabelaSimbolos.INTEGER);
+				
+			}// D -> CONST ID = [-] CONSTANTE;
 			else
 			{
 				casaToken(TabelaSimbolos.CONST);
 				casaToken(TabelaSimbolos.ID);
 				casaToken(TabelaSimbolos.IGUAL);
-				if(tokenE.token == TabelaSimbolos.MENOS)
+				if(tokenE.token == TabelaSimbolos.MENOS) // CASO POSSA TER +3 ENTAO CRIAR OUTRO IF AAQUI
 				{
 					casaToken(TabelaSimbolos.MENOS);
-				}
-				else if(tokenE.token == TabelaSimbolos.MAIS)   // CASO NÃO POSSA EXISTIR +3  APENAS 3 OU -3 APAGAR IF
-				{
-					casaToken(TabelaSimbolos.MAIS);
 				}
 				casaToken(TabelaSimbolos.CONSTANTE);
 
@@ -117,23 +121,20 @@ namespace Compilador_L.Compilador
 			} else
 			{
 				casaToken(TabelaSimbolos.IGUAL);
-				if (tokenE.token == TabelaSimbolos.MENOS)
+				if (tokenE.token == TabelaSimbolos.MENOS) // CASO POSSA TER +3 CRIAR OUTRO IF
 				{
 					casaToken(TabelaSimbolos.MENOS);
 				}
-				else if (tokenE.token == TabelaSimbolos.MAIS)
-				{
-					casaToken(TabelaSimbolos.MAIS);
-				}
-				casaToken(TabelaSimbolos.CONST);
+				
+				casaToken(TabelaSimbolos.CONSTANTE);
 			}
 
 		}
-		//C-> id [ "[" E "]" ] = E | for id=E to E [step constante] do {C}| if E then ( {C}+ [_EL] ) | (write|writln) op
+		//C-> ID [ ABCOLCHETE E FECOLCHETE ] IGUAL E PONTOVIRGULA | FOR ID IGUAL E TO E [STEP CONSTANTE] DO ( ABCHAVE {C}* FECHAVE | C)  | (write|writln) op
 		//ELSE -> else (C | {C})
 		public void C()
 		{
-			//C-> id [ "[" E "]" ] = E;
+			//C->ID [ ABCOLCHETE E FECOLCHETE ] IGUAL E PONTOVIRGULA
 			if (tokenE.token == TabelaSimbolos.ID)
 			{
 				casaToken(tokenE.token);
@@ -146,10 +147,8 @@ namespace Compilador_L.Compilador
 				casaToken(TabelaSimbolos.IGUAL);
 				E();
 				casaToken(TabelaSimbolos.PONTOVIRGULA);
-
-
 			} 
-			//C -> FOR ID IGUAL E TO E [STEP CONSTANTE] DO ( ABCOLCHETE {C}* FECOLCHETE | C) 
+			//C -> FOR ID IGUAL E TO E [STEP CONSTANTE] DO ( ABCHAVE {C}* FECHAVE | C) 
 			else if(tokenE.token == TabelaSimbolos.FOR)
 			{
 				casaToken(TabelaSimbolos.FOR);
@@ -171,10 +170,8 @@ namespace Compilador_L.Compilador
 					   tokenE.token == TabelaSimbolos.IF || tokenE.token == TabelaSimbolos.WRITE ||
 					   tokenE.token == TabelaSimbolos.WRITELN || tokenE.token == TabelaSimbolos.READLN)
 					{
-						C();
-						
+						C();					
 					}
-
 					casaToken(TabelaSimbolos.FECHAVE);
 				}
 				else
@@ -183,20 +180,21 @@ namespace Compilador_L.Compilador
 				}
 
 			}
-			//C -> IF E THEN ( '{' COMANDO '}' [ELSE ( '{' COMANDO '}' | COMANDO) ] |  COMANDO [ELSE ( '{' COMANDO '}' | COMANDO) ]  )
-			// '{' REPRESENTA O TOKEN ABCOLCHETE NESTE COMENTÁRIO.
+			//C -> IF E THEN (ABCHAVE {C}* FECHACHEVE [ELSE ( ABCHAVE {C}* FECHAVE | C )]  |  C[ELSE ( ABCHAVE {C}* FECHAVE | C) ]  )
 			else if (tokenE.token == TabelaSimbolos.IF)
 			{
 				casaToken(TabelaSimbolos.IF);
 				E();
 				casaToken(TabelaSimbolos.THEN);
-				//C -> IF E THEN ( '{' COMANDO '}' [ELSE ( '{' COMANDO '}' | COMANDO) ]
+				//C -> ABCHAVE {C}* FECHACHEVE [ELSE ( ABCHAVE {C}* FECHAVE | C )] 
 				if (tokenE.token == TabelaSimbolos.ABCHAVE) 
 				{
 					casaToken(TabelaSimbolos.ABCHAVE);
+					//LISTA DE 0 OU VARIOS COMANDOS. CASO SEJA OBRIGATORIO UM COMANDO TROCAR POR DO WHILE
 					while (tokenE.token == TabelaSimbolos.ID || tokenE.token == TabelaSimbolos.FOR ||
 					   tokenE.token == TabelaSimbolos.IF || tokenE.token == TabelaSimbolos.WRITE ||
-					   tokenE.token == TabelaSimbolos.WRITELN || tokenE.token == TabelaSimbolos.READLN)
+					   tokenE.token == TabelaSimbolos.WRITELN || tokenE.token == TabelaSimbolos.READLN ||
+					   tokenE.token == TabelaSimbolos.PONTOVIRGULA)
 					{
 						C();
 					}
@@ -206,9 +204,12 @@ namespace Compilador_L.Compilador
 						casaToken(TabelaSimbolos.ELSE);
 						if(tokenE.token == TabelaSimbolos.ABCHAVE)
 						{
+							casaToken(TabelaSimbolos.ABCHAVE);
+							//LISTA DE 0 OU VARIOS COMANDOS. CASO SEJA OBRIGATORIO UM COMANDO TROCAR POR DO WHILE
 							while (tokenE.token == TabelaSimbolos.ID || tokenE.token == TabelaSimbolos.FOR ||
 								tokenE.token == TabelaSimbolos.IF || tokenE.token == TabelaSimbolos.WRITE ||
-							  tokenE.token == TabelaSimbolos.WRITELN || tokenE.token == TabelaSimbolos.READLN)
+								tokenE.token == TabelaSimbolos.WRITELN || tokenE.token == TabelaSimbolos.READLN ||
+							    tokenE.token == TabelaSimbolos.PONTOVIRGULA)
 							{
 								C();
 							}
@@ -229,9 +230,11 @@ namespace Compilador_L.Compilador
 						casaToken(TabelaSimbolos.ELSE);
 						if(tokenE.token == TabelaSimbolos.ABCHAVE)
 						{
+							casaToken(TabelaSimbolos.ABCHAVE);
 							while (tokenE.token == TabelaSimbolos.ID || tokenE.token == TabelaSimbolos.FOR ||
 								tokenE.token == TabelaSimbolos.IF || tokenE.token == TabelaSimbolos.WRITE ||
-							  tokenE.token == TabelaSimbolos.WRITELN || tokenE.token == TabelaSimbolos.READLN)
+							  tokenE.token == TabelaSimbolos.WRITELN || tokenE.token == TabelaSimbolos.READLN
+							  || tokenE.token == TabelaSimbolos.PONTOVIRGULA)
 							{
 								C();
 							}
@@ -242,16 +245,23 @@ namespace Compilador_L.Compilador
 							C();
 						}
 					}
-				}
-				
-		
+				}	
 			}
 			// C -> READLN  ABPARENTESES ID FEPARENTESES PONTOVIRGULA;
-			else if(tokenE.token == TabelaSimbolos.READLN)
+			// id é um identificador de variável inteira, caractere alfanumérico ou string
+			// esse comando lê e armazena o valor lido em um id. De acordo com o exemplo esse id pode ser de um vetor
+			//caso não possa ser id de vetor comentar o if abaixo.
+			else if (tokenE.token == TabelaSimbolos.READLN)
 			{
 				casaToken(TabelaSimbolos.READLN);
 				casaToken(TabelaSimbolos.ABPARENTESES);
 				casaToken(TabelaSimbolos.ID);
+				if(tokenE.token == TabelaSimbolos.ABCOLCHETE)
+				{
+					casaToken(TabelaSimbolos.ABCOLCHETE);
+					casaToken(TabelaSimbolos.CONSTANTE);
+					casaToken(TabelaSimbolos.FECOLCHETE);
+				}
 				casaToken(TabelaSimbolos.FEPARENTESES);
 				casaToken(TabelaSimbolos.PONTOVIRGULA);
 
@@ -294,7 +304,7 @@ namespace Compilador_L.Compilador
 				casaToken(TabelaSimbolos.PONTOVIRGULA);
 			}
 		}
-		// E -> ES [ ( = | < | > | <= | >= | <> ) ES ]
+		// E -> ES [ ( IGUAL | MENOR | MAIOR | MENORIGUAL | MAIORIGUAL | DIFERENTE ) ES ]
 		public void E()
 		{
 			ES();
@@ -308,7 +318,7 @@ namespace Compilador_L.Compilador
 			}
 
 		}
-		//ES -> [ + | - ] T { ( + | - | or ) T }
+		//ES -> [ + | - ] T { ( + | - | or ) T }*
 		public void ES()
 		{
 			if(tokenE.token == TabelaSimbolos.MAIS || tokenE.token == TabelaSimbolos.MENOS)
@@ -336,7 +346,7 @@ namespace Compilador_L.Compilador
 
 			}
 		}
-		// F -> "(" E ")" |CONSTANTE| ID[ "[" E "]" ] | NOT F
+		// F -> ABPARENTESES E FEPARENTESES |CONSTANTE| ID[ ABCOLCHETE E FECOLHETE ] | NOT F
 		public void F()
 		{
 			//F -> '(' E ')'
@@ -372,24 +382,28 @@ namespace Compilador_L.Compilador
 		{
 			try
 			{
-				if(aLexico.EOF == false)
-				{
+				
 					if (tokenE.token == tokenEsperado)
 					{
-						Console.WriteLine("entrou "+ tokenE.lexema);
+						//Console.WriteLine("entrou "+ tokenE.lexema);
 						tokenE = aLexico.buscarProximoLexema(ler);
-						Console.WriteLine("saiu " + tokenE.lexema);
+						//Console.WriteLine("saiu " + tokenE.lexema);
 					}
 					else if(tokenE == null)
 					{
+						
 						Erro.ErroSintatico.Arquivo(aLexico.getLinha());
+					}else if(tokenE.token == TabelaSimbolos.EOF)
+					{
+						Erro.ErroSintatico.Arquivo(aLexico.getLinha());		
 					}
 					else
 					{
-						Console.WriteLine("caiu aki");
+						
 						Erro.ErroSintatico.Lexema(aLexico.getLinha(), tokenE.lexema);				
 					}
-				}				
+				
+				
 			}
 			catch (Exception e)
 			{
