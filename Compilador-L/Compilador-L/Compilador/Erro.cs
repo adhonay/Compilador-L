@@ -14,6 +14,12 @@ namespace Compilador_L.Compilador
             public static void Lexema(int linha, string lex) { Console.WriteLine(linha + ":lexema não identificado["+lex+"]"); Console.ReadKey(); Environment.Exit(0); }
             public static void Arquivo(int linha) { Console.WriteLine(linha + ":fim de arquivo não esperado."); Console.ReadKey(); Environment.Exit(0); }
        }
+		public struct ErroSintatico
+		{
+			public static void Lexema(int linha, string lex) { Console.WriteLine(linha + ":Token não esperado[" + lex + "]"); Console.ReadKey(); Environment.Exit(0); }
+			public static void Arquivo(int linha) { Console.WriteLine(linha + ":fim de arquivo não esperado."); Console.ReadKey(); Environment.Exit(0); }
+
+		}
 
     }
 }

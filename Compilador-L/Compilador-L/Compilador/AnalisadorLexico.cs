@@ -19,7 +19,10 @@ namespace Compilador_L.Compilador
         public int linha;
         public bool devolve;
         public bool EOF;
-
+		public int getLinha()
+		{
+			return this.linha;
+		}
         public  AnalisadorLexico(TabelaSimbolos tabelaSimbolos)
         {
             linha = 1;

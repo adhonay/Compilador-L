@@ -11,6 +11,8 @@ namespace Compilador_L.Compilador
     { 
         /*
          * Dictionary corresponde a tupla: palavra chave - simbolo
+		 * Nele temos a inserção do simbolo (token-lexema- endereço)
+		 * token é inserido como byte
          * Instancias da classe simbolo recebe lexema e token
          * Tokens palavras reservadas da linguagem:
         */
@@ -54,7 +56,7 @@ namespace Compilador_L.Compilador
          * Identificador é inserido na tabela sob demanda,
          */
         public static readonly byte ID = 36;
-        public static readonly byte CONSTANTE = 36;
+		public static readonly byte CONSTANTE = 37;
         public static readonly byte EOF = Byte.MaxValue;
 
         Dictionary<string, Simbolos> tabela;
@@ -102,11 +104,11 @@ namespace Compilador_L.Compilador
 
         }
 
-        public void Listar()
+        public void ListarInseridos()
         {
-            foreach (var teste in tabela)
+            foreach (var item in tabela)
             {
-                Console.WriteLine(teste.Value.toString());
+                Console.WriteLine(item.Value.toString());
             }
         }
 

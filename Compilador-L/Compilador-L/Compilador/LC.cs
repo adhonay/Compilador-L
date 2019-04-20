@@ -18,7 +18,7 @@ namespace Compilador_L.Compilador
         static void Main(string[] args)
         {
             Console.WriteLine("Digite o nome e extensão do arquivo.");
-            var arquivo = "exemplo.l";//Console.ReadLine();
+            var arquivo = "exemplo6.l";//Console.ReadLine();
 
             if (File.Exists(arquivo))
             {
@@ -26,21 +26,20 @@ namespace Compilador_L.Compilador
                 if (arquivo.Substring(arquivo.Length - 2, 1) == "." && arquivo.Substring(arquivo.Length - 1) == "l" || arquivo.Substring(arquivo.Length - 1) == "L")
                 {
                     Stream entrada = File.Open(arquivo, FileMode.Open);
-                    LerArquivo ler = new LerArquivo(entrada);
+					AnalisadorSintatico aSintatico = new AnalisadorSintatico(entrada);
+					aSintatico.principal();
+					/*
 
-                    AnalisadorLexico analisador = new AnalisadorLexico(new TabelaSimbolos());
-
-                    //Simbolos simbolos = analisador.buscarProximoLexema(ler);
-
+					LerArquivo ler = new LerArquivo(entrada);
+					AnalisadorLexico analisador = new AnalisadorLexico(new TabelaSimbolos());
                     var teste = analisador.buscarProximoLexema(ler).lexema;
-
                     while(teste!= "EOF")
                     {
                         Console.WriteLine(teste);                       
                         teste = analisador.buscarProximoLexema(ler).lexema;
-                    }
-                    
+                    }  
                     Console.ReadKey();
+					*/
 
                     //string linha = ler.ReadLine();
                     //while (linha != null)
