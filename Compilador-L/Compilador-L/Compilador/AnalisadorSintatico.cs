@@ -1,10 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
+/*
+ * Pontifícia Universidade Católica de Minas Gerais
+ * Compilador
+ * Autores: Adhonay Júnior, Izabela Costa
+ * Matricula: 504656, 498535
+ **/
 
 namespace Compilador_L.Compilador
 {
@@ -36,8 +38,8 @@ namespace Compilador_L.Compilador
 			} while (tokenE.token == TabelaSimbolos.VAR || tokenE.token == TabelaSimbolos.CONST);
 			if (tokenE.token == TabelaSimbolos.EOF)
 			{
-				//erro ocorre pois o programa deve ter ao menos um comando n pode finalizar após declarações
-				Erro.ErroSintatico.Arquivo(aLexico.getLinha());
+                //erro ocorre pois o programa deve ter ao menos um comando n pode finalizar após declarações
+                Erro.ErroSintatico.Arquivo(aLexico.getLinha());
 			}
 			do
 			{
@@ -47,7 +49,8 @@ namespace Compilador_L.Compilador
 					tokenE.token == TabelaSimbolos.WRITE|| tokenE.token == TabelaSimbolos.WRITELN||
 					tokenE.token == TabelaSimbolos.READLN);
 
-			if (aLexico.EOF == false)
+           // string teste = "";
+            if (aLexico.EOF == false)
 			{
 				//erro ocorre pois o programa termina sua leitura nos comandos qualquer simbolo após é inadequado.
 				Erro.ErroSintatico.Lexema(aLexico.getLinha(), tokenE.lexema);
@@ -382,31 +385,25 @@ namespace Compilador_L.Compilador
 		{
 			try
 			{
-               
                     if (tokenE.token == tokenEsperado)
                     {
-                        //Console.WriteLine("entrou "+ tokenE.lexema);
                         tokenE = aLexico.buscarProximoLexema(ler);
-                        //Console.WriteLine("saiu " + tokenE.lexema);
                     }
                     else if (tokenE == null)
                     {
-
+                 
                         Erro.ErroSintatico.Arquivo(aLexico.getLinha());
                     }
                     else if (tokenE.token == TabelaSimbolos.EOF)
                     {
+
                         Erro.ErroSintatico.Arquivo(aLexico.getLinha());
                     }
                     else
                     {
-
                         Erro.ErroSintatico.Lexema(aLexico.getLinha(), tokenE.lexema);
                     }
-                }
-				
-				
-			
+             }
 			catch (Exception e)
 			{
 				Console.WriteLine(e);

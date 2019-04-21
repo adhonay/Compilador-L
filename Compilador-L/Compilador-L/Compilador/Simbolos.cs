@@ -1,8 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+/*
+ * Pontifícia Universidade Católica de Minas Gerais
+ * Compilador
+ * Autores: Adhonay Júnior, Izabela Costa
+ * Matricula: 504656, 498535
+ **/
 
 namespace Compilador_L.Compilador
 {
