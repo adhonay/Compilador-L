@@ -49,7 +49,6 @@ namespace Compilador_L.Compilador
 					tokenE.token == TabelaSimbolos.WRITE|| tokenE.token == TabelaSimbolos.WRITELN||
 					tokenE.token == TabelaSimbolos.READLN);
 
-           // string teste = "";
             if (aLexico.EOF == false)
 			{
 				//erro ocorre pois o programa termina sua leitura nos comandos qualquer simbolo após é inadequado.
