@@ -17,8 +17,8 @@ namespace Compilador_L.Compilador
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Digite o nome e extensão do arquivo.");
-            var arquivo = "exemplo21.l";//Console.ReadLine();
+            Console.WriteLine("Digite o nome e extensão do arquivo:");
+            var arquivo = Console.ReadLine();
 
             if (File.Exists(arquivo))
             {
@@ -27,39 +27,10 @@ namespace Compilador_L.Compilador
                 {
                     Stream entrada = File.Open(arquivo, FileMode.Open);
 					AnalisadorSintatico aSintatico = new AnalisadorSintatico(entrada);
-					aSintatico.principal();
-					/*
 
-					LerArquivo ler = new LerArquivo(entrada);
-					AnalisadorLexico analisador = new AnalisadorLexico(new TabelaSimbolos());
-                    var teste = analisador.buscarProximoLexema(ler).lexema;
-                    while(teste!= "EOF")
-                    {
-                        Console.WriteLine(teste);                       
-                        teste = analisador.buscarProximoLexema(ler).lexema;
-                    }  
-                    Console.ReadKey();
-					*/
-
-                    //string linha = ler.ReadLine();
-                    //while (linha != null)
-                    //{
-
-                        
-
-                    //    if(linha == "  readln(nome);")
-                    //    {
-                    //        Erro.ErroLexico.Char(ler.numeroLinha);
-                    //        break;
-                    //    }
-
-                    //    Console.WriteLine(linha);
-                    //   // Console.WriteLine(ler.numeroLinha);
-                    //    linha = ler.ReadLine();
-                    //    //Console.WriteLine("compilado com sucesso.");
-                    //}
-                    //ler.Close();
-                    //entrada.Close();
+					aSintatico.S();
+                    Console.WriteLine("Compilado com sucesso.");
+                   
                 }
                 else
                 {

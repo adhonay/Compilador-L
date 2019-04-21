@@ -631,8 +631,8 @@ namespace Compilador_L.Compilador
                         simbolo = new Simbolos(lexema, TabelaSimbolos.CONSTANTE);
                     }
                     else
-                    { // ACHO QUE FALTA A VERIFICAÇÃO DO VETOR 4BYTES
-                        simbolo = new Simbolos(lexema, 111);
+                    {  //VETOR 4 BYTES ?
+                       // simbolo = new Simbolos(lexema, TabelaSimbolos.CONSTANTE);
                     }
                 }
                 

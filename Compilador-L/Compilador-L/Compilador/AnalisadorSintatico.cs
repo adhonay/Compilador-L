@@ -24,16 +24,9 @@ namespace Compilador_L.Compilador
 			
 			ler = new LerArquivo(arquivoEntrada);
 			aLexico = new AnalisadorLexico(new TabelaSimbolos());
-			//principal();
 			tokenE = aLexico.buscarProximoLexema(ler);
-			S();
+		}
 
-		}
-		public void principal()
-		{
-			tokenE = aLexico.buscarProximoLexema(ler);
-			S();
-		}
 		//S-> {D} | {C}+
 		public void S()
 		{		
@@ -382,26 +375,29 @@ namespace Compilador_L.Compilador
 		{
 			try
 			{
-				
-					if (tokenE.token == tokenEsperado)
-					{
-						//Console.WriteLine("entrou "+ tokenE.lexema);
-						tokenE = aLexico.buscarProximoLexema(ler);
-						//Console.WriteLine("saiu " + tokenE.lexema);
-					}
-					else if(tokenE == null)
-					{
-						
-						Erro.ErroSintatico.Arquivo(aLexico.getLinha());
-					}else if(tokenE.token == TabelaSimbolos.EOF)
-					{
-						Erro.ErroSintatico.Arquivo(aLexico.getLinha());		
-					}
-					else
-					{
-						
-						Erro.ErroSintatico.Lexema(aLexico.getLinha(), tokenE.lexema);				
-					}
+                if (!aLexico.EOF)// caso não seja final de arquivo.
+                {
+                    if (tokenE.token == tokenEsperado)
+                    {
+                        //Console.WriteLine("entrou "+ tokenE.lexema);
+                        tokenE = aLexico.buscarProximoLexema(ler);
+                        //Console.WriteLine("saiu " + tokenE.lexema);
+                    }
+                    else if (tokenE == null)
+                    {
+
+                        Erro.ErroSintatico.Arquivo(aLexico.getLinha());
+                    }
+                    else if (tokenE.token == TabelaSimbolos.EOF)
+                    {
+                        Erro.ErroSintatico.Arquivo(aLexico.getLinha());
+                    }
+                    else
+                    {
+
+                        Erro.ErroSintatico.Lexema(aLexico.getLinha(), tokenE.lexema);
+                    }
+                }
 				
 				
 			}
