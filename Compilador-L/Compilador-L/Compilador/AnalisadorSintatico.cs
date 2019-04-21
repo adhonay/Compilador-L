@@ -252,7 +252,14 @@ namespace Compilador_L.Compilador
 				if(tokenE.token == TabelaSimbolos.ABCOLCHETE)
 				{
 					casaToken(TabelaSimbolos.ABCOLCHETE);
-					casaToken(TabelaSimbolos.CONSTANTE);
+					if(tokenE.token == TabelaSimbolos.CONSTANTE)
+					{
+						casaToken(TabelaSimbolos.CONSTANTE);
+					}else
+					{
+						casaToken(TabelaSimbolos.ID);
+					}
+					
 					casaToken(TabelaSimbolos.FECOLCHETE);
 				}
 				casaToken(TabelaSimbolos.FEPARENTESES);
