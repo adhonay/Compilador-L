@@ -24,16 +24,9 @@ namespace Compilador_L.Compilador
 			
 			ler = new LerArquivo(arquivoEntrada);
 			aLexico = new AnalisadorLexico(new TabelaSimbolos());
-			//principal();
 			tokenE = aLexico.buscarProximoLexema(ler);
-			S();
+		}
 
-		}
-		public void principal()
-		{
-			tokenE = aLexico.buscarProximoLexema(ler);
-			S();
-		}
 		//S-> {D} | {C}+
 		public void S()
 		{		
@@ -247,8 +240,8 @@ namespace Compilador_L.Compilador
 					}
 				}	
 			}
-			// C ->  READLN  ABPARENTESES ID FEPARENTESES PONTOVIRGULA;
-			// id é um identificador de variável inteira, caractere alfanumérico ou string
+			// C -> READLN  ABPARENTESES ID FEPARENTESES PONTOVIRGULA;
+			// id é um identificador de variável inteira, caractere alfanumérico ou stringg
 			// esse comando lê e armazena o valor lido em um id. De acordo com o exemplo esse id pode ser de um vetor
 			//caso não possa ser id de vetor comentar o if abaixo.
 			else if (tokenE.token == TabelaSimbolos.READLN)
@@ -259,15 +252,7 @@ namespace Compilador_L.Compilador
 				if(tokenE.token == TabelaSimbolos.ABCOLCHETE)
 				{
 					casaToken(TabelaSimbolos.ABCOLCHETE);
-					if (tokenE.token == TabelaSimbolos.CONSTANTE)
-					{ 
-						casaToken(TabelaSimbolos.CONSTANTE);
-					}
-					else
-					{
-						casaToken(TabelaSimbolos.ID);
-					}
-
+					casaToken(TabelaSimbolos.CONSTANTE);
 					casaToken(TabelaSimbolos.FECOLCHETE);
 				}
 				casaToken(TabelaSimbolos.FEPARENTESES);
@@ -390,26 +375,29 @@ namespace Compilador_L.Compilador
 		{
 			try
 			{
-				
-					if (tokenE.token == tokenEsperado)
-					{
-						//Console.WriteLine("entrou "+ tokenE.lexema);
-						tokenE = aLexico.buscarProximoLexema(ler);
-						//Console.WriteLine("saiu " + tokenE.lexema);
-					}
-					else if(tokenE == null)
-					{
-						
-						Erro.ErroSintatico.Arquivo(aLexico.getLinha());
-					}else if(tokenE.token == TabelaSimbolos.EOF)
-					{
-						Erro.ErroSintatico.Arquivo(aLexico.getLinha());		
-					}
-					else
-					{
-						
-						Erro.ErroSintatico.Lexema(aLexico.getLinha(), tokenE.lexema);				
-					}
+                if (!aLexico.EOF)// caso não seja final de arquivo.
+                {
+                    if (tokenE.token == tokenEsperado)
+                    {
+                        //Console.WriteLine("entrou "+ tokenE.lexema);
+                        tokenE = aLexico.buscarProximoLexema(ler);
+                        //Console.WriteLine("saiu " + tokenE.lexema);
+                    }
+                    else if (tokenE == null)
+                    {
+
+                        Erro.ErroSintatico.Arquivo(aLexico.getLinha());
+                    }
+                    else if (tokenE.token == TabelaSimbolos.EOF)
+                    {
+                        Erro.ErroSintatico.Arquivo(aLexico.getLinha());
+                    }
+                    else
+                    {
+
+                        Erro.ErroSintatico.Lexema(aLexico.getLinha(), tokenE.lexema);
+                    }
+                }
 				
 				
 			}
