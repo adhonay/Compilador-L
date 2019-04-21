@@ -27,13 +27,13 @@ namespace Compilador_L.Compilador
 			tokenE = aLexico.buscarProximoLexema(ler);
 		}
 
-		//S-> {D} | {C}+
+		//S-> {D}+ | {C}+
 		public void S()
 		{		
-			while(tokenE.token== TabelaSimbolos.VAR || tokenE.token == TabelaSimbolos.CONST)
-			{
+			
+			do{
 				D();
-			}
+			} while (tokenE.token == TabelaSimbolos.VAR || tokenE.token == TabelaSimbolos.CONST);
 			if (tokenE.token == TabelaSimbolos.EOF)
 			{
 				//erro ocorre pois o programa deve ter ao menos um comando n pode finalizar após declarações
@@ -382,8 +382,7 @@ namespace Compilador_L.Compilador
 		{
 			try
 			{
-                if (!aLexico.EOF)// caso não seja final de arquivo.
-                {
+               
                     if (tokenE.token == tokenEsperado)
                     {
                         //Console.WriteLine("entrou "+ tokenE.lexema);
@@ -407,7 +406,7 @@ namespace Compilador_L.Compilador
                 }
 				
 				
-			}
+			
 			catch (Exception e)
 			{
 				Console.WriteLine(e);
