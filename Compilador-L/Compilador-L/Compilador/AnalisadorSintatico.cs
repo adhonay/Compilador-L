@@ -241,7 +241,7 @@ namespace Compilador_L.Compilador
 				}	
 			}
 			// C -> READLN  ABPARENTESES ID FEPARENTESES PONTOVIRGULA;
-			// id é um identificador de variável inteira, caractere alfanumérico ou string
+			// id é um identificador de variável inteira, caractere alfanumérico ou stringg
 			// esse comando lê e armazena o valor lido em um id. De acordo com o exemplo esse id pode ser de um vetor
 			//caso não possa ser id de vetor comentar o if abaixo.
 			else if (tokenE.token == TabelaSimbolos.READLN)
