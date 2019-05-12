@@ -20,7 +20,6 @@ namespace Compilador_L.Compilador
 		AnalisadorLexico aLexico;
 		Simbolos tokenE;
 		
-		
 		 public AnalisadorSintatico(Stream arquivoEntrada)
 		 {
 			
@@ -59,9 +58,13 @@ namespace Compilador_L.Compilador
 		// D -> ( VAR {  (INT|CHAR) ID [ATR] {VIRGULA ID [ATR]}*  }+    |     const id= [+|-] constante )
 		public void D()
 		{
+
+			TemporarioSimbolo aux = new TemporarioSimbolo();
 			if (tokenE.token == TabelaSimbolos.VAR)
 			{
+				aux.setClasse(TabelaSimbolos.VAR);
 				casaToken(TabelaSimbolos.VAR);
+
 				do
 				{
 					if (tokenE.token == TabelaSimbolos.INTEGER)
