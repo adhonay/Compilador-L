@@ -1,0 +1,14 @@
+
+
+S → { D }+ | { C }+ 
+
+D → VAR { (INTEGER|CHAR) ID [ATR] {,ID [ATR]}*; }+ | CONST ID = [-] CONSTANTE;
+ATR → = [-] CONSTANTE | “[” CONSTANTE “]”
+
+C → ID [“[”E“]”] = E; | FOR ID = E TO E [ STEP CONSTANTE ] DO (“{” {C}* “}” | C) | IF E THEN (“{” {C}* “}” [ ELSE (“{” {C}* “}” | C)] | C [ELSE (“{” {C}* “}” | C) ] ) |
+READLN (ID [“[”CONSTANTE | ID “]”] ); | (WRITELN | WRITE) ((E) {,(E)}*); | ;
+
+E → ES [ (= | < | > | <= | >= | <>) ES ]
+ES → [ + | - ] T { ( + | - | or ) T }
+T → F { ( * | / | % | and ) F }
+F → ( E ) | CONSTANTE | ID [ [ E ] ] | NOT F

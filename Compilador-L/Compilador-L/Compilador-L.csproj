@@ -65,5 +65,13 @@
     <None Include="Documentos\Exemplos\exemplo1.l" />
     <None Include="Documentos\Exemplos\exemplo2.l" />
   </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Documentos\Parte 1\Autômato.JPG" />
+    <Content Include="Documentos\Parte 1\Gramática.JPG" />
+    <Content Include="Documentos\Parte 1\Gramática.txt" />
+    <Content Include="Documentos\Parte 1\Tabela de Símbolos.jpg" />
+    <Content Include="Documentos\Parte 2\EsquemaSemantico.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

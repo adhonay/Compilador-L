@@ -1,0 +1,77 @@
+
+D → VAR(0) { ( INTEGER(1) | CHAR(2) ) ID(3) [ATR(4)] { ,ID(3) [ATR(4)]}*; }+ | CONST ID(8) = [-(5) | +(6)] CONSTANTE(7);
+ATR → = [-(5) | +(6)] CONSTANTE(7) | “[” CONSTANTE(8) “]”
+
+(0) {D.classe = CLASSE_VAR}
+(1) {D.tipo = TIPO_INTEIRO}
+(2) {D.tipo = TIPO_CARACTERE}
+
+(3) {se id.classe != SEM_CLASSE
+		Erro(Declarado)
+	senao
+		id.classe = CLASSE_VAR
+		id.tipo = D.tipo}
+
+(4) {se (id.tipo == TIPO_CARACTERE && ATR.tipo == TIPO_CARACTERE && ATR.tamanho != ESCALAR)
+		Erro(tipo)
+	 senao se ATR.tipo != id.tipo
+		se !(ATR.tipo == TIPO_INTEIRO && ATR.tamanho != ESCALAR && id.tipo == TIPO_CARACTERE)
+				Erro(Tipo) }
+
+(5) {ATR.sinal = '-'}
+(6) {ATR.sinal = '+'}
+(7) {se sinal == (+|-) && constante.tipo != TIPO_INTEIRO
+		Erro(tipo)
+	 senao se constante.tipo == TIPO_INTEIRO
+		ATR.tipo = TIPO_INTEIRO
+		ATR.tamanho = ESCALAR
+	 senao se constante.tipo == TIPO_CARACTERE && constante.tamanho == 0
+		ATR.tipo = TIPO_CARACTERE
+		ATR.tamanho = ESCALAR;
+	 senao se constante.tipo == TIPO_CARACTERE && (constante.tamanho > 0 && constante.tamanho < 255)
+		ATR.tipo = TIPO_CARACTERE
+		ATR.tamanho = constante.tamanho;
+	 senao se constante.tipo == TIPO_CARACTERE && constante.tamanho > 255 
+		Erro(tamanho)
+	 senao
+		Erro(tipo) }
+
+(8) {se constante.tipo != TIPO_INTEIRO
+		Erro(tipo)
+	 senao se constate.val > 4bytes
+		Erro(tamanho)
+	 senao
+		ATR.tipo = TIPO_INTEIRO
+		ATR.tamanho = constante.val}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+C → ID [“[”E“]”] = E; | FOR ID = E TO E [ STEP CONSTANTE ] DO (“{” {C}* “}” | C) | IF E THEN (“{” {C}* “}” [ ELSE (“{” {C}* “}” | C)] | C [ELSE (“{” {C}* “}” | C) ] ) |
+READLN (ID [“[”CONSTANTE | ID “]”] ); | (WRITELN | WRITE) ((E) {,(E)}*); | ;
+
+E → ES [ (= | < | > | <= | >= | <>) ES ]
+ES → [ + | - ] T { ( + | - | or ) T }
+T → F { ( * | / | % | and ) F }
+F → ( E ) | CONSTANTE | ID [ [ E ] ] | NOT F
