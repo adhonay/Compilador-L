@@ -51,6 +51,7 @@
     <Compile Include="Compilador\ContadorLinha.cs" />
     <Compile Include="Compilador\Erro.cs" />
     <Compile Include="Compilador\LC.cs" />
+    <Compile Include="Compilador\TemporarioSimbolo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Compilador\Simbolos.cs" />
     <Compile Include="Compilador\TabelaSimbolos.cs" />
