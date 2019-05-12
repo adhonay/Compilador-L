@@ -623,16 +623,20 @@ namespace Compilador_L.Compilador
                         lexema = '"'+lexema.Substring(1, lexema.Length - 2) + "$"+'"';
                     }
 
-                    simbolo = new Simbolos(lexema, TabelaSimbolos.CONSTANTE);
+                    simbolo = new Simbolos(lexema, TabelaSimbolos.CONSTANTE);// verificar se aqui e string
                 }
                 else
-                {   //const hexadecimal ou alfanumérico('c') ou inteiro
-                    if (lexema.Length > 1 && lexema[1] == 'x' || lexema[0] == 39  || (-32768 <= int.Parse(lexema) && int.Parse(lexema) <= 32767))
+                {   //const hexadecimal ou alfanumérico('c')
+                    if (lexema.Length > 1 && lexema[1] == 'x' || lexema[0] == 39)
                     {
-                        simbolo = new Simbolos(lexema, TabelaSimbolos.CONSTANTE);
+                        simbolo = new Simbolos(lexema, TabelaSimbolos.CONSTANTE, Simbolos.TIPO_CARACTERE);
+                    }
+                    else if((-32768 <= int.Parse(lexema) && int.Parse(lexema) <= 32767))// condição interio 
+                    { 
+                        simbolo = new Simbolos(lexema, TabelaSimbolos.CONSTANTE, Simbolos.TIPO_INTEIRO);
                     }
                     else
-                    {  //VETOR 4 BYTES ?
+                    {// verficar oque seria aqui. vetor ? inteiro maior que o passado etc..
                         simbolo = new Simbolos(lexema, TabelaSimbolos.CONSTANTE);
                     }
                 }
