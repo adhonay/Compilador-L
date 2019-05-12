@@ -1,5 +1,5 @@
 
-D → VAR(0) { ( INTEGER(1) | CHAR(2) ) ID(3) [ATR(4)] { ,ID(3) [ATR(4)]}*; }+ | CONST ID(8) = [-(5) | +(6)] CONSTANTE(7);
+D → VAR(0) { ( INTEGER(1) | CHAR(2) ) ID(3) [ATR(4)] { ,ID(3) [ATR(4)]}*; }+ | CONST(9) ID(8) = [-(5) | +(6)] CONSTANTE(7);
 ATR → = [-(5) | +(6)] CONSTANTE(7) | “[” CONSTANTE(8) “]”
 
 (0) {D.classe = CLASSE_VAR}
@@ -44,6 +44,7 @@ ATR → = [-(5) | +(6)] CONSTANTE(7) | “[” CONSTANTE(8) “]”
 		ATR.tipo = TIPO_INTEIRO
 		ATR.tamanho = constante.val}
 
+(9) {D.classe = CLASSE_CONST}
 
 
 
