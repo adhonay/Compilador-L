@@ -1,53 +1,60 @@
 
-D → VAR(0) { ( INTEGER(1) | CHAR(2) ) ID(3) [ATR(4)] { ,ID(3) [ATR(4)]}*; }+ | CONST(9) ID(8) = [-(5) | +(6)] CONSTANTE(7);
-ATR → = [-(5) | +(6)] CONSTANTE(7) | “[” CONSTANTE(8) “]”
+D → VAR(1) { ( INTEGER(3) | CHAR(4) ) ID(5) [ATR(6)] { ,ID(5) [ATR(6)]}*; }+ | CONST(2) ID(5) = [-(7)] CONSTANTE(10);
+ATR → = [-(7)] CONSTANTE(8) | “[” CONSTANTE(9) “]”
 
-(0) {D.classe = CLASSE_VAR}
-(1) {D.tipo = TIPO_INTEIRO}
-(2) {D.tipo = TIPO_CARACTERE}
 
-(3) {se id.classe != SEM_CLASSE
-		Erro(Declarado)
+(1) {D.classe = CLASSE_VAR}
+(2) {D.classe = CLASSE_CONST}
+(3) {D.tipo = TIPO_INTEIRO}
+(4) {D.tipo = TIPO_CARACTERE}
+
+(5) {se id.classe == SEM_CLASSE
+		id.classe = D.classe
+		se id.class != const entao
+			id.tipo = D.tipo
 	senao
-		id.classe = CLASSE_VAR
-		id.tipo = D.tipo}
+		Erro(Declarado)}
 
-(4) {se (id.tipo == TIPO_CARACTERE && ATR.tipo == TIPO_CARACTERE && ATR.tamanho != ESCALAR)
-		Erro(tipo)
-	 senao se ATR.tipo != id.tipo
-		se !(ATR.tipo == TIPO_INTEIRO && ATR.tamanho != ESCALAR && id.tipo == TIPO_CARACTERE)
-				Erro(Tipo) }
-
-(5) {ATR.sinal = '-'}
-(6) {ATR.sinal = '+'}
-(7) {se sinal == (+|-) && constante.tipo != TIPO_INTEIRO
-		Erro(tipo)
-	 senao se constante.tipo == TIPO_INTEIRO
-		ATR.tipo = TIPO_INTEIRO
-		ATR.tamanho = ESCALAR
-	 senao se constante.tipo == TIPO_CARACTERE && constante.tamanho == 0
-		ATR.tipo = TIPO_CARACTERE
-		ATR.tamanho = ESCALAR;
-	 senao se constante.tipo == TIPO_CARACTERE && (constante.tamanho > 0 && constante.tamanho < 255)
-		ATR.tipo = TIPO_CARACTERE
-		ATR.tamanho = constante.tamanho;
-	 senao se constante.tipo == TIPO_CARACTERE && constante.tamanho > 255 
-		Erro(tamanho)
+(6) {se id.tipo == TIPO_CARACTERE && ATR.tipo == TIPO_CARACTERE && ATR.tamanho != ESCALAR entao
+		Erro(Tipo)
+	 senao se ATR.tipo != id.tipo entao
+		Erro(Tipo)
+	 senao se ATR.val != NULL entao	
+		id.tamanho = ATR.val
 	 senao
-		Erro(tipo) }
+		id.tamanho = ATR.tamanho}
 
-(8) {se constante.tipo != TIPO_INTEIRO
-		Erro(tipo)
-	 senao se constate.val > 4bytes
-		Erro(tamanho)
+(7) {qsinal = '-'}
+(8) {se sinal == '-' entao
+		se constante.tipo != TIPO_INTEIRO entao
+			Erro(tipo)
+		senao 
+			ATR.tipo = TIPO_INTEIRO
+			ATR.tamanho = ESCALAR
+	senao 
+		ATR.tipo = constante.tipo
+		ATR.tamanho = constate.tamanho
+
+
+
+(10) {se sinal == '-' entao
+		se constante.tipo != TIPO_INTEIRO entao
+			Erro(tipo)	
+		senao
+			id.tipo = constante.tipo
+			id.tamanho = constante.tamanho
 	 senao
-		ATR.tipo = TIPO_INTEIRO
-		ATR.tamanho = constante.val}
-
-(9) {D.classe = CLASSE_CONST}
+		id.tipo = constante.tipo
+		id.tamanho = constante.tamanho}
 
 
 
+
+
+
+
+
+				
 
 
 
