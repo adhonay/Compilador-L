@@ -2,6 +2,8 @@
 D → VAR(1) { ( INTEGER(3) | CHAR(4) ) ID(5) [ATR(6)] { ,ID(5) [ATR(6)]}*; }+ | CONST(2) ID(5) = [-(7)] CONSTANTE(10);
 ATR → = [-(7)] CONSTANTE(8) | “[” CONSTANTE(9) “]”
 
+VAI TER QUE EXISTIR O TIPO HEXADECIMAL 
+POIS NAO PODEMOS ATRIBUIR NUM VETOR DE CARACTERE EM UMA DETERMINADA POSICAO O VALOR 0xFF pois daria pau 
 
 (1) {D.classe = CLASSE_VAR}
 (2) {D.classe = CLASSE_CONST}
@@ -31,11 +33,20 @@ ATR → = [-(7)] CONSTANTE(8) | “[” CONSTANTE(9) “]”
 		senao 
 			ATR.tipo = TIPO_INTEIRO
 			ATR.tamanho = ESCALAR
+	senao se constante.tipo == TIPO_CARACTERE && constante.tamanho > 256
+		Erro(tamanho)
 	senao 
 		ATR.tipo = constante.tipo
 		ATR.tamanho = constate.tamanho
 
-
+(9) {se constante.tipo != TIPO_INTEIRO entao
+		Erro(tipo)
+	senao se constate.val > 4bytes
+		Erro(tamanho)
+	senao 
+		ATR.tipo = id.tipo
+		ATR.tamanho = constante.tamanho
+		ATR.val = constante.val
 
 (10) {se sinal == '-' entao
 		se constante.tipo != TIPO_INTEIRO entao
@@ -47,7 +58,10 @@ ATR → = [-(7)] CONSTANTE(8) | “[” CONSTANTE(9) “]”
 		id.tipo = constante.tipo
 		id.tamanho = constante.tamanho}
 
-
+E → ES [ (= | < | > | <= | >= | <>) ES ]
+ES → [ + | - ] T { ( + | - | or ) T }
+T → F { ( * | / | % | and ) F }
+F → “(” E “)” | CONSTANTE | ID [ “[” E “]”] | NOT F1
 
 
 
@@ -79,7 +93,4 @@ ATR → = [-(7)] CONSTANTE(8) | “[” CONSTANTE(9) “]”
 C → ID [“[”E“]”] = E; | FOR ID = E TO E [ STEP CONSTANTE ] DO (“{” {C}* “}” | C) | IF E THEN (“{” {C}* “}” [ ELSE (“{” {C}* “}” | C)] | C [ELSE (“{” {C}* “}” | C) ] ) |
 READLN (ID [“[”CONSTANTE | ID “]”] ); | (WRITELN | WRITE) ((E) {,(E)}*); | ;
 
-E → ES [ (= | < | > | <= | >= | <>) ES ]
-ES → [ + | - ] T { ( + | - | or ) T }
-T → F { ( * | / | % | and ) F }
-F → ( E ) | CONSTANTE | ID [ [ E ] ] | NOT F
+
