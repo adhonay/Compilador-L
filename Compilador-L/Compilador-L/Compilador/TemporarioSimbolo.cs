@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 namespace Compilador_L.Compilador
 {
 	class TemporarioSimbolo
-	{
-		
+	{		
         public byte classe { get; set; }
         public byte tipo { get; set; }
 
@@ -24,10 +23,5 @@ namespace Compilador_L.Compilador
 			this.classe = classe;
 
 		}
-
-	
-
-
-
 	}
 }

@@ -36,6 +36,16 @@ namespace Compilador_L.Compilador
         public static readonly byte TIPO_HEXADECIMAL = 7;
         public static readonly byte TIPO_STRING = 8;
 
+        public Simbolos()
+        {
+            this.lexema = "";
+            this.token = 0;
+            this.endereco = SEM_ENDERECO;
+            this.classe = SEM_CLASSE;
+            this.tipo = SEM_TIPO;
+            this.tamanho = ESCALAR;
+        }
+
         public Simbolos(string lexema, byte token)
         {
             this.lexema = lexema;
