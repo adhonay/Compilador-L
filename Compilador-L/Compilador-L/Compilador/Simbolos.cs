@@ -30,9 +30,9 @@ namespace Compilador_L.Compilador
         public static readonly byte SEM_TIPO = 3;
         public static readonly byte TIPO_INTEIRO = 4;
         public static readonly byte TIPO_CARACTERE = 5;
-        //falta o professor responder para colocar possiveis tipos arranjo e string pra atribuir no lexico
 
         public static readonly int SEM_TAMANHO = -1;
+        public static readonly int ESCALAR = 0;
         public static readonly int SEM_ENDERECO = -1;
         public Simbolos(string lexema, byte token)
         {

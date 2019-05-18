@@ -1,0 +1,158 @@
+
+D → VAR(1) { ( INTEGER(3) | CHAR(4) ) ID(5) [ATR(6)] { ,ID(5) [ATR(6)]}*; }+ | CONST(2) ID(5) = [-(7)] CONSTANTE(10);
+ATR → = [-(7)] CONSTANTE(8) | “[” CONSTANTE(9) “]”
+
+(1) {D.classe = CLASSE_VAR}
+(2) {D.classe = CLASSE_CONST}
+(3) {D.tipo = TIPO_INTEIRO}
+(4) {D.tipo = TIPO_CARACTERE}
+
+(5) {se id.classe == SEM_CLASSE
+		id.classe = D.classe
+		se id.class != const entao
+			id.tipo = D.tipo
+	senao
+		Erro(Declarado)}
+
+SO VAI FUNCIONAR SE O LEXICO RETORNAR CONSTANTE DO COM TIPO HEXADECIMAL
+(6) {se ATR.tipo != id.tipo entao
+		Erro(Tipo)
+	 senao
+		id.tamanho = ATR.tamanho}
+
+(7) {sinal = '-'}
+(8) {se sinal == '-' && constante.tipo != TIPO_INTEIRO entao
+			Erro(tipo)
+	senao 
+		ATR.tipo = constante.tipo
+		ATR.tamanho = constate.tamanho}
+
+(9) {se constante.tipo != TIPO_INTEIRO entao
+		Erro(tipo)
+	senao se constate.val > 4bytes
+		Erro(tamanho)
+	senao 
+		ATR.tipo = id.tipo
+		ATR.tamanho = constante.val}
+
+(10) {se sinal == '-' && constante.tipo != TIPO_INTEIRO entao
+			Erro(tipo)	
+	 senao
+		id.tipo = constante.tipo
+		id.tamanho = constante.tamanho}
+
+
+E → ES [ (= | < | > | <= | >= | <>) ES ]
+ES → [ + | - ] T { ( + | - | or ) T }
+T → F { ( * | / | % | and ) F }
+F → “(” E(1) “)” | CONSTANTE(2) | ID(3) [ “[” E(4) “]”] | NOT F1(5)
+
+(1){ F.tipo = E.tipo }
+(2){ F.tipo = constante.tipo}
+
+
+
+
+
+
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+C → ID [“[”E“]”] = E; | FOR ID = E TO E [ STEP CONSTANTE ] DO (“{” {C}* “}” | C) | IF E THEN (“{” {C}* “}” [ ELSE (“{” {C}* “}” | C)] | C [ELSE (“{” {C}* “}” | C) ] ) |
+READLN (ID [“[”CONSTANTE | ID “]”] ); | (WRITELN | WRITE) ((E) {,(E)}*); | ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Vesão antiga
+D → VAR(1) { ( INTEGER(3) | CHAR(4) ) ID(5) [ATR(6)] { ,ID(5) [ATR(6)]}*; }+ | CONST(2) ID(5) = [-(7)] CONSTANTE(10);
+ATR → = [-(7)] CONSTANTE(8) | “[” CONSTANTE(9) “]”
+
+(1) {D.classe = CLASSE_VAR}
+(2) {D.classe = CLASSE_CONST}
+(3) {D.tipo = TIPO_INTEIRO}
+(4) {D.tipo = TIPO_CARACTERE}
+
+(5) {se id.classe == SEM_CLASSE
+		id.classe = D.classe
+		se id.class != const entao
+			id.tipo = D.tipo
+	senao
+		Erro(Declarado)}
+
+(6) {se id.tipo == TIPO_CARACTERE && ATR.tipo == TIPO_CARACTERE && ATR.tamanho != ESCALAR entao
+		Erro(Tipo)
+	 senao se ATR.tipo != id.tipo entao
+		Erro(Tipo)
+	 senao se ATR.val != NULL entao	
+		id.tamanho = ATR.val
+	 senao
+		id.tamanho = ATR.tamanho}
+
+(7) {sinal = '-'}
+(8) {se sinal == '-' entao
+		se constante.tipo != TIPO_INTEIRO entao
+			Erro(tipo)
+		senao 
+			ATR.tipo = TIPO_INTEIRO
+			ATR.tamanho = ESCALAR
+	senao se constante.tipo == TIPO_CARACTERE && constante.tamanho > 256
+		Erro(tamanho)
+	senao 
+		ATR.tipo = constante.tipo
+		ATR.tamanho = constate.tamanho
+
+(9) {se constante.tipo != TIPO_INTEIRO entao
+		Erro(tipo)
+	senao se constate.val > 4bytes
+		Erro(tamanho)
+	senao 
+		ATR.tipo = id.tipo
+		ATR.tamanho = constante.tamanho
+		ATR.val = constante.val
+
+(10) {se sinal == '-' entao
+		se constante.tipo != TIPO_INTEIRO entao
+			Erro(tipo)	
+		senao
+			id.tipo = constante.tipo
+			id.tamanho = constante.tamanho
+	 senao
+		id.tipo = constante.tipo
+		id.tamanho = constante.tamanho}
