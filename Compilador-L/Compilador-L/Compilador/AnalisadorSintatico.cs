@@ -109,8 +109,23 @@ namespace Compilador_L.Compilador
 					while (tokenE.token == TabelaSimbolos.VIRGULA)
 					{
 						casaToken(TabelaSimbolos.VIRGULA);
+                        auxID = tokenE;
 						casaToken(TabelaSimbolos.ID);
-						if (tokenE.token == TabelaSimbolos.IGUAL || tokenE.token == TabelaSimbolos.ABCOLCHETE)
+                        //ação semantica 5
+                        if (auxID.classe == Simbolos.SEM_CLASSE)
+                        {
+                            tabela.buscarSimbolo(auxID.lexema).classe = _Daux.classe;
+                            if (auxID.classe != Simbolos.CLASSE_CONST)
+                            {
+                                tabela.buscarSimbolo(auxID.lexema).tipo = _Daux.tipo;
+                            }
+                        }
+                        else
+                        {
+                            // eerro ID JA ECLARADO
+                        }
+
+                        if (tokenE.token == TabelaSimbolos.IGUAL || tokenE.token == TabelaSimbolos.ABCOLCHETE)
 						{
 							Atr();
 						}
@@ -122,14 +137,35 @@ namespace Compilador_L.Compilador
 			}// D -> CONST ID = [-] CONSTANTE;
 			else
 			{
-				casaToken(TabelaSimbolos.CONST);
+                //ação semantica 2
+                _Daux.classe = Simbolos.CLASSE_CONST;
+                casaToken(TabelaSimbolos.CONST);
+                auxID = tokenE;
 				casaToken(TabelaSimbolos.ID);
-				casaToken(TabelaSimbolos.IGUAL);
+                //ação semantica 5
+                if (auxID.classe == Simbolos.SEM_CLASSE)
+                {
+                    tabela.buscarSimbolo(auxID.lexema).classe = _Daux.classe;
+                    if (auxID.classe != Simbolos.CLASSE_CONST)
+                    {
+                        tabela.buscarSimbolo(auxID.lexema).tipo = _Daux.tipo;
+                    }
+                }
+                else
+                {
+                  // eerro ID JA ECLARADO
+                }
+
+                casaToken(TabelaSimbolos.IGUAL);
 				if(tokenE.token == TabelaSimbolos.MENOS) // CASO POSSA TER +3 ENTAO CRIAR OUTRO IF AAQUI
 				{
+                    //ação semantica 6
+                    sinal = true;
 					casaToken(TabelaSimbolos.MENOS);
 				}
+                auxCONST = tokenE;
 				casaToken(TabelaSimbolos.CONSTANTE);
+
 
 				casaToken(TabelaSimbolos.PONTOVIRGULA);
 			}
