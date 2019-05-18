@@ -19,6 +19,7 @@ namespace Compilador_L.Compilador
 		LerArquivo ler;
 		AnalisadorLexico aLexico;
 		Simbolos tokenE;
+        TabelaSimbolos tabela;
 		
 		 public AnalisadorSintatico(Stream arquivoEntrada)
 		 {
@@ -26,6 +27,7 @@ namespace Compilador_L.Compilador
 			ler = new LerArquivo(arquivoEntrada);
 			aLexico = new AnalisadorLexico(new TabelaSimbolos());
 			tokenE = aLexico.buscarProximoLexema(ler);
+            tabela = new TabelaSimbolos();
 		}
 
 		//S-> {D}+ | {C}+
@@ -58,24 +60,48 @@ namespace Compilador_L.Compilador
 		// D -> ( VAR {  (INT|CHAR) ID [ATR] {VIRGULA ID [ATR]}*  }+    |     const id= [+|-] constante )
 		public void D()
 		{
+			TemporarioSimbolo _Daux = new TemporarioSimbolo();
+            Simbolos auxID = new Simbolos("", 0);
+            Simbolos auxCONST = new Simbolos("", 0);
+            Boolean sinal;
 
-			TemporarioSimbolo aux = new TemporarioSimbolo();
-			if (tokenE.token == TabelaSimbolos.VAR)
+            if (tokenE.token == TabelaSimbolos.VAR)
 			{
-				aux.setClasse(TabelaSimbolos.VAR);
+                //ação semantica 1
+                _Daux.classe = Simbolos.CLASSE_VAR;
 				casaToken(TabelaSimbolos.VAR);
 
 				do
 				{
 					if (tokenE.token == TabelaSimbolos.INTEGER)
 					{
+                        //ação semantica 3
+                        _Daux.tipo= Simbolos.TIPO_INTEIRO;
 						casaToken(TabelaSimbolos.INTEGER);
 					}
 					else
 					{
+                        //ação semantica 4
+                        _Daux.tipo = Simbolos.TIPO_CARACTERE;
 						casaToken(TabelaSimbolos.CHAR);
 					}
+                         //recebo o ID
+                    auxID = tokenE;
 					casaToken(TabelaSimbolos.ID);
+                    //ação semantica 5
+                    if(auxID.classe == Simbolos.SEM_CLASSE)
+                    {
+                        tabela.buscarSimbolo(auxID.lexema).classe = _Daux.classe;
+                        if(auxID.classe != Simbolos.CLASSE_CONST)
+                        {
+                            tabela.buscarSimbolo(auxID.lexema).tipo = _Daux.tipo;
+                        }
+                    }
+                    else
+                    {
+                        // eerro ID JA ECLARADO
+                    }
+
 					if (tokenE.token == TabelaSimbolos.IGUAL || tokenE.token == TabelaSimbolos.ABCOLCHETE)
 					{
 						Atr();
@@ -83,8 +109,23 @@ namespace Compilador_L.Compilador
 					while (tokenE.token == TabelaSimbolos.VIRGULA)
 					{
 						casaToken(TabelaSimbolos.VIRGULA);
+                        auxID = tokenE;
 						casaToken(TabelaSimbolos.ID);
-						if (tokenE.token == TabelaSimbolos.IGUAL || tokenE.token == TabelaSimbolos.ABCOLCHETE)
+                        //ação semantica 5
+                        if (auxID.classe == Simbolos.SEM_CLASSE)
+                        {
+                            tabela.buscarSimbolo(auxID.lexema).classe = _Daux.classe;
+                            if (auxID.classe != Simbolos.CLASSE_CONST)
+                            {
+                                tabela.buscarSimbolo(auxID.lexema).tipo = _Daux.tipo;
+                            }
+                        }
+                        else
+                        {
+                            // eerro ID JA ECLARADO
+                        }
+
+                        if (tokenE.token == TabelaSimbolos.IGUAL || tokenE.token == TabelaSimbolos.ABCOLCHETE)
 						{
 							Atr();
 						}
@@ -96,14 +137,35 @@ namespace Compilador_L.Compilador
 			}// D -> CONST ID = [-] CONSTANTE;
 			else
 			{
-				casaToken(TabelaSimbolos.CONST);
+                //ação semantica 2
+                _Daux.classe = Simbolos.CLASSE_CONST;
+                casaToken(TabelaSimbolos.CONST);
+                auxID = tokenE;
 				casaToken(TabelaSimbolos.ID);
-				casaToken(TabelaSimbolos.IGUAL);
+                //ação semantica 5
+                if (auxID.classe == Simbolos.SEM_CLASSE)
+                {
+                    tabela.buscarSimbolo(auxID.lexema).classe = _Daux.classe;
+                    if (auxID.classe != Simbolos.CLASSE_CONST)
+                    {
+                        tabela.buscarSimbolo(auxID.lexema).tipo = _Daux.tipo;
+                    }
+                }
+                else
+                {
+                  // eerro ID JA ECLARADO
+                }
+
+                casaToken(TabelaSimbolos.IGUAL);
 				if(tokenE.token == TabelaSimbolos.MENOS) // CASO POSSA TER +3 ENTAO CRIAR OUTRO IF AAQUI
 				{
+                    //ação semantica 6
+                    sinal = true;
 					casaToken(TabelaSimbolos.MENOS);
 				}
+                auxCONST = tokenE;
 				casaToken(TabelaSimbolos.CONSTANTE);
+
 
 				casaToken(TabelaSimbolos.PONTOVIRGULA);
 			}

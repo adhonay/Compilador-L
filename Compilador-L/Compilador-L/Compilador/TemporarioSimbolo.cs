@@ -8,13 +8,14 @@ namespace Compilador_L.Compilador
 {
 	class TemporarioSimbolo
 	{
-		private byte tipo;
-		private byte classe;
+		
+        public byte classe { get; set; }
+        public byte tipo { get; set; }
 
-		public TemporarioSimbolo()
+        public TemporarioSimbolo()
 		{
-			this.tipo = 0;
-			this.classe = 0;
+            this.tipo = 0;
+            this.classe = 0;
 		}
 
 		public TemporarioSimbolo(byte tipo, byte classe)
@@ -24,25 +25,7 @@ namespace Compilador_L.Compilador
 
 		}
 
-		public byte getTipo()
-		{
-			return tipo;
-		}
-
-		public void setTipo(byte tipo)
-		{
-			this.tipo = tipo;
-		}
-
-		public byte getClasse()
-		{
-			return classe;
-		}
-
-		public void setClasse(byte classe)
-		{
-			this.classe = classe;
-		}
+	
 
 
 
