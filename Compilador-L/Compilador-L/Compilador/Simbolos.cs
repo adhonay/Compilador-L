@@ -23,17 +23,19 @@ namespace Compilador_L.Compilador
         public byte tipo { get; set; }
         public int tamanho { get; set; }
 
-        public static readonly byte SEM_CLASSE = 0;
-        public static readonly byte CLASSE_VAR = 1;
-        public static readonly byte CLASSE_CONST = 2;
-
-        public static readonly byte SEM_TIPO = 3;
-        public static readonly byte TIPO_INTEIRO = 4;
-        public static readonly byte TIPO_CARACTERE = 5;
-
-        public static readonly int SEM_TAMANHO = -1;
         public static readonly int ESCALAR = 0;
         public static readonly int SEM_ENDERECO = -1;
+
+        public static readonly byte SEM_CLASSE = 1;
+        public static readonly byte CLASSE_VAR = 2;
+        public static readonly byte CLASSE_CONST = 3;
+
+        public static readonly byte SEM_TIPO = 4;
+        public static readonly byte TIPO_INTEIRO = 5;
+        public static readonly byte TIPO_CARACTERE = 6;
+        public static readonly byte TIPO_HEXADECIMAL = 7;
+        public static readonly byte TIPO_STRING = 8;
+
         public Simbolos(string lexema, byte token)
         {
             this.lexema = lexema;
@@ -41,8 +43,7 @@ namespace Compilador_L.Compilador
             this.endereco = SEM_ENDERECO;
             this.classe = SEM_CLASSE;
             this.tipo = SEM_TIPO;
-            this.tamanho = SEM_TAMANHO;
-
+            this.tamanho = ESCALAR;
         }
   
         public Simbolos(string lexema, byte token , byte tipo)
@@ -52,8 +53,7 @@ namespace Compilador_L.Compilador
             this.endereco = SEM_ENDERECO;
             this.classe = SEM_CLASSE;
             this.tipo = tipo;
-            this.tamanho = SEM_TAMANHO;
-
+            this.tamanho = ESCALAR;
         }
 
         public string toString()
