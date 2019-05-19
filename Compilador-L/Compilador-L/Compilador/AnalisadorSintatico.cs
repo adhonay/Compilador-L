@@ -61,9 +61,10 @@ namespace Compilador_L.Compilador
 		public void D()
 		{
 			TemporarioSimbolo _Daux = new TemporarioSimbolo();
-            Simbolos auxID = new Simbolos("", 0);
-            Simbolos auxCONST = new Simbolos("", 0);
-            Boolean sinal;
+            TemporarioSimbolo _D = new TemporarioSimbolo(); // auxilia na construção dos atributos do ATR
+            Simbolos auxID = new Simbolos("", Byte.MaxValue);
+            Simbolos auxCONST = new Simbolos("", Byte.MaxValue);
+            Boolean sinal = false ;
 
             if (tokenE.token == TabelaSimbolos.VAR)
 			{
@@ -99,19 +100,28 @@ namespace Compilador_L.Compilador
                     }
                     else
                     {
-                        // eerro ID JA ECLARADO
+                        // erro ID JA ECLARADO
                     }
-
 					if (tokenE.token == TabelaSimbolos.IGUAL || tokenE.token == TabelaSimbolos.ABCOLCHETE)
 					{
-						Atr();
+                        Atr(_D,auxID.tipo);
 					}
+                    //inicio ação semantica 9
+                    if(_D.tipo != auxID.tipo) //atr.tipo != id.tipo erro
+                    {
+                        //erro tipos incmpativeis
+                    }
+                    else
+                    {
+                        auxID.tamanho = _D.tamanho;
+                    }
+                    //fim ação semantica 9
 					while (tokenE.token == TabelaSimbolos.VIRGULA)
 					{
 						casaToken(TabelaSimbolos.VIRGULA);
                         auxID = tokenE;
 						casaToken(TabelaSimbolos.ID);
-                        //ação semantica 5
+                        //inicio ação semantica 5
                         if (auxID.classe == Simbolos.SEM_CLASSE)
                         {
                             tabela.buscarSimbolo(auxID.lexema).classe = _Daux.classe;
@@ -122,27 +132,39 @@ namespace Compilador_L.Compilador
                         }
                         else
                         {
-                            // eerro ID JA ECLARADO
+                            // erro ID JA ECLARADO
                         }
-
+                        // fim ação semantica 5
                         if (tokenE.token == TabelaSimbolos.IGUAL || tokenE.token == TabelaSimbolos.ABCOLCHETE)
 						{
-							Atr();
-						}
-					}
-					casaToken(TabelaSimbolos.PONTOVIRGULA);
+                            Atr(_D, auxID.tipo);
+                        }
+                        //inicio ação semantica 9
+                        if (_D.tipo != auxID.tipo) //atr.tipo != id.tipo erro
+                        {
+                            //erro tipos incmpativeis
+                        }
+                        else
+                        {
+                            auxID.tamanho = _D.tamanho;
+                        }
+                        //fim ação semantica 9
+
+                    }
+                    casaToken(TabelaSimbolos.PONTOVIRGULA);
 
 				} while (tokenE.token == TabelaSimbolos.CHAR || tokenE.token == TabelaSimbolos.INTEGER);
 				
 			}// D -> CONST ID = [-] CONSTANTE;
 			else
 			{
-                //ação semantica 2
+                //inicio ação semantica 2
                 _Daux.classe = Simbolos.CLASSE_CONST;
+                //fim ação semantica 2
                 casaToken(TabelaSimbolos.CONST);
                 auxID = tokenE;
 				casaToken(TabelaSimbolos.ID);
-                //ação semantica 5
+                //inicio ação semantica 5
                 if (auxID.classe == Simbolos.SEM_CLASSE)
                 {
                     tabela.buscarSimbolo(auxID.lexema).classe = _Daux.classe;
@@ -153,75 +175,234 @@ namespace Compilador_L.Compilador
                 }
                 else
                 {
-                  // eerro ID JA ECLARADO
+                  // erro ID JA ECLARADO
                 }
-
+                //fim ação semantica 5
                 casaToken(TabelaSimbolos.IGUAL);
-				if(tokenE.token == TabelaSimbolos.MENOS) // CASO POSSA TER +3 ENTAO CRIAR OUTRO IF AAQUI
+				if(tokenE.token == TabelaSimbolos.MENOS)
 				{
+					casaToken(TabelaSimbolos.MENOS);
                     //ação semantica 6
                     sinal = true;
-					casaToken(TabelaSimbolos.MENOS);
-				}
+                }
                 auxCONST = tokenE;
 				casaToken(TabelaSimbolos.CONSTANTE);
-
+                //inicio ação semantica 10
+                if(sinal == true)
+                {
+                    if(auxCONST.tipo != Simbolos.TIPO_INTEIRO)
+                    {
+                        //erro veio sinal e n veio numero
+                    }
+                    else
+                    {
+                        auxID.tipo = auxCONST.tipo;
+                        auxID.tamanho = auxCONST.tamanho;
+                    }
+                }
+                else if(auxCONST.tipo == Simbolos.TIPO_HEXA || auxCONST.tipo == Simbolos.TIPO_CARACTERE)
+                {
+                    auxID.tipo = Simbolos.TIPO_CARACTERE;
+                    auxID.tamanho = auxCONST.tamanho;
+                }
+                else if(auxCONST.tipo == Simbolos.TIPO_INTEIRO)
+                {
+                    auxID.tipo = auxCONST.tipo;
+                    auxID.tamanho = auxCONST.tamanho;
+                }
+                else
+                {
+                    //erro tipo inesperado (nao é int, char ou hexa) sendo atribuido a constante
+                }
+                //fim ação semantica 10
 
 				casaToken(TabelaSimbolos.PONTOVIRGULA);
 			}
 		}
-		//Atr -> = [+|-] constante | [constante]
-		public void Atr()
+		//Atr -> = [-] constante | [constante]
+		public void Atr(TemporarioSimbolo _Atr,Byte _IDtipo)
 		{
-			if (tokenE.token == TabelaSimbolos.ABCOLCHETE)
+            Boolean sinal = false;
+            Simbolos auxCONST = new Simbolos("", Byte.MaxValue);
+
+            if (tokenE.token == TabelaSimbolos.ABCOLCHETE)
 			{
 				casaToken(TabelaSimbolos.ABCOLCHETE);
+                auxCONST = tokenE;
 				casaToken(TabelaSimbolos.CONSTANTE);
+                //inicio ação semantica 8
+                if (auxCONST.tipo != Simbolos.TIPO_INTEIRO)
+                {
+                    //erro tipo
+                }
+                else
+                {
+                    _Atr.tipo = _IDtipo;
+                    _Atr.tamanho = int.Parse(auxCONST.lexema);
+                }
+                // fim ação semantica 8
 				casaToken(TabelaSimbolos.FECOLCHETE);
 			} else
 			{
 				casaToken(TabelaSimbolos.IGUAL);
-				if (tokenE.token == TabelaSimbolos.MENOS) // CASO POSSA TER +3 CRIAR OUTRO IF
-				{
+				if (tokenE.token == TabelaSimbolos.MENOS) 
+				{                 
 					casaToken(TabelaSimbolos.MENOS);
-				}
-				
+                    sinal = true;
+                }
+                auxCONST = tokenE; 
 				casaToken(TabelaSimbolos.CONSTANTE);
+                //inicio ação semantica 7
+                if(sinal == true)
+                {
+                    if(auxCONST.tipo != Simbolos.TIPO_INTEIRO)
+                    {
+                        //ERRO TIPOS 
+                    }
+                    else
+                    {
+                        _Atr.tipo = auxCONST.tipo;
+                        _Atr.tamanho= auxCONST.tamanho;
+                    }
+
+                }
+                else if(auxCONST.tipo == Simbolos.TIPO_HEXA|| auxCONST.tipo == Simbolos.TIPO_CARACTERE)
+                {
+                    _Atr.tipo = Simbolos.TIPO_CARACTERE;
+                    _Atr.tamanho = auxCONST.tamanho;
+                }
+                else
+                {
+                    _Atr.tipo = auxCONST.tipo; // se vier int sem sinal ou string cai aqui
+                    _Atr.tamanho = auxCONST.tamanho;
+                } 
+                // fim ação semantica 7
+
 			}
 
 		}
-		//C-> ID [ ABCOLCHETE E FECOLCHETE ] IGUAL E PONTOVIRGULA | FOR ID IGUAL E TO E [STEP CONSTANTE] DO ( ABCHAVE {C}* FECHAVE | C)  | (write|writln) op
-		//ELSE -> else (C | {C})
-		public void C()
+        //C-> ID [ ABCOLCHETE E FECOLCHETE ] IGUAL E PONTOVIRGULA |
+        //FOR ID IGUAL E TO E [STEP CONSTANTE] DO ( ABCHAVE {C}* FECHAVE | C)  | 
+        //(write|writln) ABPARENTESES (E | CONSTANTE )  {, ( E | CONSTANTE)  }*  FEPARENTESES ;
+        //READLN  ABPARENTESES ID [ [ CONSTANTE | ID ]  ] FEPARENTESES ; | 
+        //IF E THEN (  {  {C}* } [ELSE ( { {C}* } | C ) ]    C [ ELSE ( {  {C}* } | C) ] )  
+        public void C()
 		{
-			//C->ID [ ABCOLCHETE E FECOLCHETE ] IGUAL E PONTOVIRGULA
-			if (tokenE.token == TabelaSimbolos.ID)
+            TemporarioSimbolo _C = new TemporarioSimbolo(); //a ser preenchido por E();
+            Simbolos _auxCONSTc = new Simbolos("", Byte.MaxValue);
+            Simbolos _auxIDc = new Simbolos("", Byte.MaxValue);
+            Boolean isVetor =false, vetorUtilizado =false;
+
+            //C->ID [ ABCOLCHETE E FECOLCHETE ] IGUAL E PONTOVIRGULA
+            if (tokenE.token == TabelaSimbolos.ID)
 			{
+                _auxIDc = tokenE;
 				casaToken(tokenE.token);
-				if(tokenE.token == TabelaSimbolos.ABCOLCHETE)
+                //inicio ação semantica 0
+                if(_auxIDc.classe == Simbolos.SEM_CLASSE)
+                {
+                    //erro id não declarado
+                }
+                //inicio ação semantica 1
+                else if(_auxIDc.classe == Simbolos.CLASSE_CONST)
+                {
+                    //erro tipos incompativeis (um identificador constante n pode ter atribuiçao)
+                }
+                //fim ação semantica 2
+                else if (_auxIDc.tamanho > 0)
+                {
+                    isVetor = true;
+                }
+
+                if (tokenE.token == TabelaSimbolos.ABCOLCHETE)
 				{
 					casaToken(TabelaSimbolos.ABCOLCHETE);
-					E();
-					casaToken(TabelaSimbolos.FECOLCHETE);
+					E(_C);
+                    //inicio açao semantica 3
+                    if (_C.tipo != Simbolos.TIPO_INTEIRO)
+                    {
+                        //erro dentro do colchete so pode ter numero
+                    }                 
+                    else if (_auxIDc.tamanho == 0) 
+                    {
+                        //erro 
+                    }//fim ação 3, inicio ação semantica 12
+                    else
+                    {
+                        vetorUtilizado = true;
+                    }
+                    //fim ação semantica 12
+                    casaToken(TabelaSimbolos.FECOLCHETE);
 				}
 				casaToken(TabelaSimbolos.IGUAL);
-				E();
+				E(_C);
+                //inicio ação semantica 4
+                if(_C.tipo != _auxIDc.tipo || isVetor != vetorUtilizado)
+                {
+                    //ERRO 
+                }
+                //fim ação semantica 4
 				casaToken(TabelaSimbolos.PONTOVIRGULA);
 			} 
 			//C -> FOR ID IGUAL E TO E [STEP CONSTANTE] DO ( ABCHAVE {C}* FECHAVE | C) 
 			else if(tokenE.token == TabelaSimbolos.FOR)
 			{
 				casaToken(TabelaSimbolos.FOR);
+                _auxIDc = tokenE;
 				casaToken(TabelaSimbolos.ID);
+
+                //inicio ação semantica 0
+                if (_auxIDc.classe == Simbolos.SEM_CLASSE)
+                {
+                    //erro id não declarado
+                }
+                //inicio ação semantica 1
+                if (_auxIDc.classe == Simbolos.CLASSE_CONST)
+                {
+                    //ERRO IDENTIFICADOR É UMA CONSTANTE NÃO PODE RECEBER NADA
+                }
+                //incio ação semantica 5
+                if(_auxIDc.tipo != Simbolos.TIPO_INTEIRO || _auxIDc.tamanho > 0)
+                {
+                    // erro id no for tem q ser inteiro para fazer for id = numero
+                }
+                //fim ação semantica 5
 				casaToken(TabelaSimbolos.IGUAL);
-				E();
-				casaToken(TabelaSimbolos.TO);
-				E();
-				if(tokenE.token == TabelaSimbolos.STEP)
+				E(_C);
+
+                //inicio ação semantica 6
+                if(_C.tipo != Simbolos.TIPO_INTEIRO)
+                {
+                    //erro , E tem qe retornar um int para o for
+                }
+                //fim ação semantica 6
+
+                casaToken(TabelaSimbolos.TO);
+				E(_C);
+
+                //inicio ação semantica 6
+                if (_C.tipo != Simbolos.TIPO_INTEIRO)
+                {
+                    //erro , E tem qe retornar um int para o for
+                }
+                //fim ação semantica 6
+
+
+                // STEP OPCIONAL
+                if (tokenE.token == TabelaSimbolos.STEP)
 				{
 					casaToken(TabelaSimbolos.STEP);
-					casaToken(TabelaSimbolos.CONSTANTE);					
+                    _auxCONSTc = tokenE;
+					casaToken(TabelaSimbolos.CONSTANTE);	
+
+                    //ação semantica 7
+                    if(_auxCONSTc.tipo != Simbolos.TIPO_INTEIRO)
+                    {
+                        //erro a constante no step tem q ser int
+                    }
+                    //fim ação semantica 7
 				}
+
 				casaToken(TabelaSimbolos.DO);
 				if(tokenE.token == TabelaSimbolos.ABCHAVE)
 				{
@@ -244,7 +425,15 @@ namespace Compilador_L.Compilador
 			else if (tokenE.token == TabelaSimbolos.IF)
 			{
 				casaToken(TabelaSimbolos.IF);
-				E();
+				E(_C);
+
+                //inicio ação semantica 8
+                if(_C.tipo != Simbolos.TIPO_LOGICO)
+                {
+                    //ERRO E TEM QUE RETORNAR LOGICO
+                }
+                //fim ação semantica 8
+
 				casaToken(TabelaSimbolos.THEN);
 				//C -> ABCHAVE {C}* FECHACHEVE [ELSE ( ABCHAVE {C}* FECHAVE | C )] 
 				if (tokenE.token == TabelaSimbolos.ABCHAVE) 
@@ -315,20 +504,79 @@ namespace Compilador_L.Compilador
 			{
 				casaToken(TabelaSimbolos.READLN);
 				casaToken(TabelaSimbolos.ABPARENTESES);
+                _auxIDc = tokenE;
 				casaToken(TabelaSimbolos.ID);
+
+                //inicio ação semantica 0
+                if(_auxIDc.classe == Simbolos.SEM_CLASSE)
+                {
+                  
+                }
+                // fim ação 0 , inicio ação 01
+                if (_auxIDc.classe == Simbolos.CLASSE_CONST) 
+                {
+                   
+                }// fim ação semantica 1, Inicio ação semantica 14
+                if(_auxIDc.tipo == Simbolos.TIPO_LOGICO)
+                {
+                    
+                }
+                // fim ação semantica 14, inicio ação semantica 2
+                if(_auxIDc.tamanho > 0)
+                {
+                    isVetor = true;
+                }//fim ação semantica 2
+
+            
 				if(tokenE.token == TabelaSimbolos.ABCOLCHETE)
 				{
+                    //inicio ação semantica 9
+                    if(_auxIDc.tamanho <= 0)
+                    {
+                       //erro 
+                    }//fim ação 9
 					casaToken(TabelaSimbolos.ABCOLCHETE);
 					if(tokenE.token == TabelaSimbolos.CONSTANTE)
 					{
+                        _auxCONSTc = tokenE;
 						casaToken(TabelaSimbolos.CONSTANTE);
+                        //inicio ação semantica 7
+                        if(_auxCONSTc.tipo != Simbolos.TIPO_INTEIRO)
+                        {
+                            //erro
+                        }//fim ação semantica 7
+
+                        //inicio ação sementica 12
+                        vetorUtilizado = true;
+                        //fim ação 12
 					}else
 					{
+                        _auxIDc = tokenE;
 						casaToken(TabelaSimbolos.ID);
+                        //inicio ação semantica 0
+                        if(_auxIDc.classe == Simbolos.SEM_CLASSE)
+                        {
+                            //erro
+                        }
+                        //fim ação semantica 0, inicio ação 10
+                        if(_auxIDc.tipo != Simbolos.TIPO_INTEIRO)
+                        {
+                            //erro
+                        }//fim ação semantica 10
+
+                        //inicio ação semantica 12
+                        vetorUtilizado = true;
+                        //fim ação 12
 					}
 					
 					casaToken(TabelaSimbolos.FECOLCHETE);
 				}
+                //inicio ação semantica 13
+                if(vetorUtilizado != isVetor)
+                {
+                    //erro
+                }
+                //fim ação semtnica 13
 				casaToken(TabelaSimbolos.FEPARENTESES);
 				casaToken(TabelaSimbolos.PONTOVIRGULA);
 
@@ -372,7 +620,7 @@ namespace Compilador_L.Compilador
 			}
 		}
 		// E -> ES [ ( IGUAL | MENOR | MAIOR | MENORIGUAL | MAIORIGUAL | DIFERENTE ) ES ]
-		public void E()
+		public void E(TemporarioSimbolo _E)
 		{
 			ES();
 			if(tokenE.token == TabelaSimbolos.IGUAL || tokenE.token == TabelaSimbolos.MENOR ||

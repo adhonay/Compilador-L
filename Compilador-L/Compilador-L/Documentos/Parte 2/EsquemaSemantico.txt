@@ -41,6 +41,58 @@ SO VAI FUNCIONAR SE O LEXICO RETORNAR CONSTANTE DO COM TIPO HEXADECIMAL
 		id.tipo = constante.tipo
 		id.tamanho = constante.tamanho}
 
+Ações semanticas COMANDOS
+C →  ID(0)(1)(2) [ "["E (3)(12) "]" ] =  E(4)  |
+FOR ID(0)(1)(5) = E(6) TO E(6) [STEP CONSTANTE(7)] DO ( "{" {C}* "}"  | C) |
+IF E(8) THEN (   "{" {C}* "}"[ELSE ( "{" {C}* "}" | C ) ]   |  C[ ELSE ( "{"  {C}* "}" | C) ] ) |
+READLN "(" ID(0)(1)(14)(2) [ "[" (9) CONSTANTE (7) (12)|(9) ID (0)(10) (12) "]"  ] (13)")" ; | 
+(WRITELN | WRITE) "( "(E | CONSTANTE )  {, ( E | CONSTANTE)  }*  ")" ;
+
+(0) {se id.classe == Simbolo.SEM_CLASSE então
+		ERRO identificador nao declarado }
+
+(1) {se id.classe == const então
+		ERRO classe de identificador incompativel
+	}
+
+(2) {se id.tamanho > 0 então 
+	isVetor = true;}
+
+(3){se E.tipo!= Simbolo.TIPO_INT então
+		ERRO tipos incompativeis
+	senao se id.tamanho == 0 então
+		ERRO tipos incompativeis
+	}
+	
+(4){se E.tipo != id.tipo || isVetor != vetorUtilizado
+	   ERRO tipos incompativeis.}
+
+(5){se id.tipo != int || id.tamanho > 0
+      tipos incompativeis.}
+
+(6){ se E.tipo != int 
+	ERRO tipos incompativeis.}
+
+(7){se constante.tipo != int então
+	ERRO tipos incompativeis }
+
+(8){se E.tipo != logico então
+		ERRO tipos incompativeis}
+
+(9) {se id.tamanho <= 0 então
+		Erro tipos incompativeis}
+
+(10) { se id.tipo != int então
+		ERRO tipos incompativeis}
+
+
+(12){vetorUtilizado = true;}
+
+(13){ se isVetor != vetorUtilizado então
+		ERRO TIPOS }
+(14){se id.tipo == logico então
+		ERRO ERRO tipos incompativeiS
+	}
 
 E → ES [ (= | < | > | <= | >= | <>) ES ]
 ES → [ + | - ] T { ( + | - | or ) T }

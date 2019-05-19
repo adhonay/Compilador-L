@@ -30,6 +30,10 @@ namespace Compilador_L.Compilador
         public static readonly byte SEM_TIPO = 3;
         public static readonly byte TIPO_INTEIRO = 4;
         public static readonly byte TIPO_CARACTERE = 5;
+        //inserir:
+        public static readonly byte TIPO_HEXA = 6;
+        public static readonly byte TIPO_STRING = 7;
+        public static readonly byte TIPO_LOGICO = 8;
 
         public static readonly int SEM_TAMANHO = -1;
         public static readonly int ESCALAR = 0;
