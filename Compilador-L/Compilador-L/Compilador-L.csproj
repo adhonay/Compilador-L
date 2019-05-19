@@ -72,6 +72,7 @@
     <Content Include="Documentos\Parte 1\Gramática.JPG" />
     <Content Include="Documentos\Parte 1\Gramática.txt" />
     <Content Include="Documentos\Parte 1\Tabela de Símbolos.jpg" />
+    <Content Include="Documentos\Parte 2\EsquemaGeraçãoCodigo.txt" />
     <Content Include="Documentos\Parte 2\EsquemaSemantico.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
