@@ -1,51 +1,85 @@
 
-D → VAR(1) { ( INTEGER(3) | CHAR(4) ) ID(5) [ATR(6)] { ,ID(5) [ATR(6)]}*; }+ | CONST(2) ID(5) = [-(7)] CONSTANTE(10);
-ATR → = [-(7)] CONSTANTE(8) | “[” CONSTANTE(9) “]”
+D → VAR(1) { ( INTEGER(3) | CHAR(4) ) ID(5) [ATR(9)] { ,ID(5) [ATR(9)]}*; }+ | 
+CONST(2) ID(5) = [-(6)] CONSTANTE(10);
+ATR → = [-(6)] CONSTANTE(7) | “[” CONSTANTE(8) “]”
 
-(1) {D.classe = CLASSE_VAR}
-(2) {D.classe = CLASSE_CONST}
-(3) {D.tipo = TIPO_INTEIRO}
-(4) {D.tipo = TIPO_CARACTERE}
+(1) {Daux.classe = CLASSE_VAR}
+(2) {Daux.classe = CLASSE_CONST}
+(3) {Daux.tipo = TIPO_INTEIRO}
+(4) {Daux.tipo = TIPO_CARACTERE}
 
 (5) {se id.classe == SEM_CLASSE
 		id.classe = D.classe
 		se id.class != const entao
 			id.tipo = D.tipo
 	senao
-		Erro(Declarado)}
+		Erro(Declarado)
+	}
 
-SO VAI FUNCIONAR SE O LEXICO RETORNAR CONSTANTE DO COM TIPO HEXADECIMAL
-(6) {se ATR.tipo != id.tipo entao
-		Erro(Tipo)
-	 senao
-		id.tamanho = ATR.tamanho}
+(6) {sinal = true}
 
-(7) {sinal = '-'}
-(8) {se sinal == '-' && constante.tipo != TIPO_INTEIRO entao
+(7) { se sinal == true
+		se (constante.tipo != TIPO_INTEIRO) então
+			ERRO(TIPO)
+		senao
+		ATR.tipo = constante.tipo
+		ATR.tamanho = constante.tamanho
+	senao se (constante.tipo == hexa || constante.tipo ==char) então
+		ATR.tipo = char
+		ATR.tamanho = constante.tamanho
+	senao								                       // PASSA AKI QUANDO É STRING OU NUMERO SEM SINAL
+		ATR.tipo = constante.tipo
+		ATR.tamanho = constante.tamanho	
+	}
+
+(8) {constante.tipo != TIPO_INTEIRO entao
 			Erro(tipo)
 	senao 
-		ATR.tipo = constante.tipo
-		ATR.tamanho = constate.tamanho}
+		ATR.tipo = id.tipo
+		ATR.tamanho = constante
+	}
 
+(9) {se ATR.tipo != id.tipo entao
+		Erro(Tipo)
+	 senao
+		id.tamanho = ATR.tamanho
+	}
+
+(10){se  sinal == true 
+		se(constante.tipo != TIPO_INTEIRO) entao
+			Erro(tipo)	
+		senaõ 
+		id.tipo = constante.tipo;
+		id.tamanho = constante.tamanho;
+	senao se (constante.tipo == TIPO_HEXADECIMAL || constante.tipo == TIPO_CHAR)
+		id.tipo = TIPO_CHAR
+		id.tamanho = constante.tamanho;
+	senao se (constante.tipo == TIPO_INTEIRO) entao
+		id.tipo = constante.tipo;
+		id.tamanho = constante.tamanho;
+	senao
+		ERRO(TIPO)
+	}
+
+
+
+----------------------------------------------------OLHA AKI-----------------------------------------------
 (9) {se constante.tipo != TIPO_INTEIRO entao
 		Erro(tipo)
 	senao se constate.val > 4bytes
-		Erro(tamanho)
+		Erro(tamanho)          // --------------------NAÕ FIZ ERRO DE TAMANHO 
 	senao 
 		ATR.tipo = id.tipo
 		ATR.tamanho = constante.val}
 
-(10) {se sinal == '-' && constante.tipo != TIPO_INTEIRO entao
-			Erro(tipo)	
-	 senao
-		id.tipo = constante.tipo
-		id.tamanho = constante.tamanho}
+----------------------------------------------------------------------------------------------------
 
-Ações semanticas COMANDOS
-C →  ID(0)(1)(2) [ "["E (3)(12) "]" ] =  E(4)  |
+AÇOES SEMANTICAS COMANDOS
+C →  ID(0)(1)(2) [ "["E (3)(12) "]" ] =  E(4)  |  
 FOR ID(0)(1)(5) = E(6) TO E(6) [STEP CONSTANTE(7)] DO ( "{" {C}* "}"  | C) |
 IF E(8) THEN (   "{" {C}* "}"[ELSE ( "{" {C}* "}" | C ) ]   |  C[ ELSE ( "{"  {C}* "}" | C) ] ) |
-READLN "(" ID(0)(1)(14)(2) [ "[" (9) CONSTANTE (7) (12)|(9) ID (0)(10) (12) "]"  ] (13)")" ; | 
+READLN "(" ID(0)(1)(14)(2) [ "[" E "]"  ] (13)")" ; | 
+
 (WRITELN | WRITE) "( "(E | CONSTANTE )  {, ( E | CONSTANTE)  }*  ")" ;
 
 (0) {se id.classe == Simbolo.SEM_CLASSE então
@@ -94,16 +128,119 @@ READLN "(" ID(0)(1)(14)(2) [ "[" (9) CONSTANTE (7) (12)|(9) ID (0)(10) (12) "]" 
 		ERRO ERRO tipos incompativeiS
 	}
 
-E → ES [ (= | < | > | <= | >= | <>) ES ]
-ES → [ + | - ] T { ( + | - | or ) T }
-T → F { ( * | / | % | and ) F }
-F → “(” E(1) “)” | CONSTANTE(2) | ID(3) [ “[” E(4) “]”] | NOT F1(5)
 
-(1){ F.tipo = E.tipo }
-(2){ F.tipo = constante.tipo}
+AÇOES SEMANTICAS EXPRESSÕES
 
+E → ES(15) [ (= | < | > | <= | >= | <>) ES (16) ]
+ES → [ + (11) | -(12)  ] T (13) { ( + | - | or ) T(14) }
+T → F(9) { ( * | / | % | and ) F (10) }
+F → “(” E(1) “)” | CONSTANTE(2) | ID(3)(4) [ “[” (5) E (6) “]” ] (7) | NOT F1 (8)
 
+(1){F.tipo = E.tipo}
+(2){F.tipo = constante.tipo}
+(3){se id.classe == SEM_CLASSE então
+		ERRO identificador nao declarado
+}
 
+(4) {se id.tamanho > 0 então 
+	isVetor = true;}
+
+(5){se id.classe == CLASSE_CONSTANTE
+		ERRO classe de identificador incompativel
+	senao se id.tamanho <= 0 entao
+		ERRO tipos incompativeis
+	}
+
+(6){ se E.tipo != TIPO_INTEIRO entao
+		ERRO tipos incompativeis
+	senao
+		vetorUtilizado = true;
+	}
+
+(7) {se isVetor != vetorUtilizado entao
+		ERRO tipos incompativeis
+	senao
+		F.tipo = id.tipo
+	}
+
+(8){se F1.tipo != logico
+		ERRO tipos incompativeis
+	senao
+		F.tipo = logico
+	}
+
+(9) {T.tipo = F.tipo}
+
+(10)
+{se _op == and 
+		se T.tipo != logico || F.tipo != logico
+			ERRO tipos incompativeis
+
+	se _op == * 
+		se T.tipo == inteiro && F.tipo == byte || T.tipo == byte && F.tipo == inteiro || T.tipo == inteiro 
+			&& I1.tipo == inteiro
+			entao G.tipo = inteiro
+		senao se T.tipo == byte && F.tipo ==byte
+			entao T.tipo = byte
+		senao
+			ERRO tipos incompativeis
+	se op == /
+		se T.tipo == byte && F.tipo == byte || T.tipo == inteiro && F.tipo == byte || T.tipo == byte 
+			&& F.tipo == inteiro || T.tipo == inteiro && F.tipo == inteiro
+			entao T.tipo = inteiro
+		senao
+			ERRO tipos incompativeis
+
+	se op == %           ------------------------ACHO QUE SÓ POSSO FAZER MOD IGUAL A DIVISAO E ESSE BYTE ???
+		se T.tipo == byte && F.tipo == byte || T.tipo == inteiro && F.tipo == byte || T.tipo == byte 
+			&& F.tipo == inteiro || T.tipo == inteiro && F.tipo == inteiro
+			entao T.tipo = inteiro
+		senao
+			ERRO tipos incompativeis
+}
+(11){ _sinalflag == '+' }
+(12) { _sinalflag == '-'}
+
+(13) {se _sinalflag == (+||-) && T.tipo != (inteiro && byte )
+		erro(tipo)
+	se _sinalflag == '-'
+		T.tipo = inteiro
+	ES.tipo = G.tipo
+	}
+
+(14)
+{se op == '+'
+	se string+string
+		//gerarcod
+		senao se inteiro+inteiro || byte+inteiro || inteiro+byte
+		ES.tipo = inteiro;;
+	senao se byte+byte
+		ES.tipo = byte
+	senao
+		erro(tipo)
+se op == '-'
+	senao se ES.tipo == inteiro && T.tipo == inteiro || ES.tipo == byte && T.tipo == inteiro || ES.tipo ==
+		inteiro && T.tipo == byte
+		F.tipo = inteiro
+	senao se ES.tipo == byte && T.tipo == byte
+		ES.tipo = byte
+	senao
+		erro(tipo)
+ se op == 'OR' ------------------------------ ESSA ERA A CONDIÇAO DE AND É A MSM DE OR CERTO ?
+	se ES.tipo == logico && T.tipo == logico
+		ES.tipo = logico
+	senao
+	erro(tipo)
+}
+
+(15){E.tipo = ES.tipo}
+(16){se E.tipo == string && F1.tipo == string && op == '=='
+ E.tipo = logico;
+ senao se E.tipo == byte && F1.tipo == byte || E.tipo == byte && F1.tipo == inteiro || E.tipo == inteiro
+&& F1.tipo == byte || E.tipo == inteiro && F1.tipo == inteiro
+ E.tipo = logico;
+ senao
+ Erro(tipo)}
 
 
 
