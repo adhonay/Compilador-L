@@ -21,13 +21,12 @@ namespace Compilador_L.Compilador
 		Simbolos tokenE;
         TabelaSimbolos tabela;
 		
-		 public AnalisadorSintatico(Stream arquivoEntrada)
-		 {
-			
-			ler = new LerArquivo(arquivoEntrada);
-			aLexico = new AnalisadorLexico(new TabelaSimbolos());
-			tokenE = aLexico.buscarProximoLexema(ler);
+		public AnalisadorSintatico(Stream arquivoEntrada)
+		{
             tabela = new TabelaSimbolos();
+            aLexico = new AnalisadorLexico(tabela);
+            ler = new LerArquivo(arquivoEntrada);
+			tokenE = aLexico.buscarProximoLexema(ler);                 
 		}
 
 		//S-> {D}+ | {C}+
@@ -40,7 +39,7 @@ namespace Compilador_L.Compilador
 			if (tokenE.token == TabelaSimbolos.EOF)
 			{
                 //erro ocorre pois o programa deve ter ao menos um comando n pode finalizar após declarações
-                Erro.ErroSintatico.Arquivo(aLexico.getLinha());
+                Erro.ErroSintatico.Arquivo(aLexico.linha);
 			}
 			do
 			{
@@ -53,7 +52,7 @@ namespace Compilador_L.Compilador
             if (aLexico.EOF == false)
 			{
 				//erro ocorre pois o programa termina sua leitura nos comandos qualquer simbolo após é inadequado.
-				Erro.ErroSintatico.Lexema(aLexico.getLinha(), tokenE.lexema);
+				Erro.ErroSintatico.Lexema(aLexico.linha, tokenE.lexema);
 			}
 
 		}
@@ -100,7 +99,7 @@ namespace Compilador_L.Compilador
                     }
                     else
                     {
-                        // erro ID JA ECLARADO
+                        Erro.ErroSemantico.Declarado(aLexico.linha, auxID.lexema);
                     }
 					if (tokenE.token == TabelaSimbolos.IGUAL || tokenE.token == TabelaSimbolos.ABCOLCHETE)
 					{
@@ -109,7 +108,7 @@ namespace Compilador_L.Compilador
                     //inicio ação semantica 9
                     if(_D.tipo != auxID.tipo) //atr.tipo != id.tipo erro
                     {
-                        //erro tipos incmpativeis
+                        Erro.ErroSemantico.Tipos(aLexico.linha);
                     }
                     else
                     {
@@ -132,7 +131,7 @@ namespace Compilador_L.Compilador
                         }
                         else
                         {
-                            // erro ID JA ECLARADO
+                            Erro.ErroSemantico.Declarado(aLexico.linha, auxID.lexema);
                         }
                         // fim ação semantica 5
                         if (tokenE.token == TabelaSimbolos.IGUAL || tokenE.token == TabelaSimbolos.ABCOLCHETE)
@@ -142,7 +141,7 @@ namespace Compilador_L.Compilador
                         //inicio ação semantica 9
                         if (_D.tipo != auxID.tipo) //atr.tipo != id.tipo erro
                         {
-                            //erro tipos incmpativeis
+                            Erro.ErroSemantico.Tipos(aLexico.linha);
                         }
                         else
                         {
@@ -175,7 +174,7 @@ namespace Compilador_L.Compilador
                 }
                 else
                 {
-                  // erro ID JA ECLARADO
+                    Erro.ErroSemantico.Declarado(aLexico.linha, auxID.lexema);
                 }
                 //fim ação semantica 5
                 casaToken(TabelaSimbolos.IGUAL);
@@ -192,7 +191,7 @@ namespace Compilador_L.Compilador
                 {
                     if(auxCONST.tipo != Simbolos.TIPO_INTEIRO)
                     {
-                        //erro veio sinal e n veio numero
+                        Erro.ErroSemantico.Tipos(aLexico.linha);
                     }
                     else
                     {
@@ -213,10 +212,11 @@ namespace Compilador_L.Compilador
                 else
                 {
                     //erro tipo inesperado (nao é int, char ou hexa) sendo atribuido a constante
+                    Erro.ErroSemantico.Tipos(aLexico.linha);
                 }
                 //fim ação semantica 10
 
-				casaToken(TabelaSimbolos.PONTOVIRGULA);
+                casaToken(TabelaSimbolos.PONTOVIRGULA);
 			}
 		}
 		//Atr -> = [-] constante | [constante]
@@ -707,16 +707,16 @@ namespace Compilador_L.Compilador
                     else if (tokenE == null)
                     {
                  
-                        Erro.ErroSintatico.Arquivo(aLexico.getLinha());
+                        Erro.ErroSintatico.Arquivo(aLexico.linha);
                     }
                     else if (tokenE.token == TabelaSimbolos.EOF)
                     {
 
-                        Erro.ErroSintatico.Arquivo(aLexico.getLinha());
+                        Erro.ErroSintatico.Arquivo(aLexico.linha);
                     }
                     else
                     {
-                        Erro.ErroSintatico.Lexema(aLexico.getLinha(), tokenE.lexema);
+                        Erro.ErroSintatico.Lexema(aLexico.linha, tokenE.lexema);
                     }
              }
 			catch (Exception e)
