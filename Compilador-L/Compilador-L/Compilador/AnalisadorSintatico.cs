@@ -506,9 +506,10 @@ namespace Compilador_L.Compilador
 				casaToken(TabelaSimbolos.ABPARENTESES);
                 _auxIDc = tokenE;
 				casaToken(TabelaSimbolos.ID);
+                isVetor = false; vetorUtilizado = false;
 
                 //inicio ação semantica 0
-                if(_auxIDc.classe == Simbolos.SEM_CLASSE)
+                if (_auxIDc.classe == Simbolos.SEM_CLASSE)
                 {
                   
                 }

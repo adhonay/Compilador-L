@@ -34,6 +34,8 @@ ATR → = [-(6)] CONSTANTE(7) | “[” CONSTANTE(8) “]”
 
 (8) {constante.tipo != TIPO_INTEIRO entao
 			Erro(tipo)
+	senao se constante > 4bytes
+		Erro(tamanho)        
 	senao 
 		ATR.tipo = id.tipo
 		ATR.tamanho = constante
@@ -61,18 +63,6 @@ ATR → = [-(6)] CONSTANTE(7) | “[” CONSTANTE(8) “]”
 		ERRO(TIPO)
 	}
 
-
-
-----------------------------------------------------OLHA AKI-----------------------------------------------
-(9) {se constante.tipo != TIPO_INTEIRO entao
-		Erro(tipo)
-	senao se constate.val > 4bytes
-		Erro(tamanho)          // --------------------NAÕ FIZ ERRO DE TAMANHO 
-	senao 
-		ATR.tipo = id.tipo
-		ATR.tamanho = constante.val}
-
-----------------------------------------------------------------------------------------------------
 
 AÇOES SEMANTICAS COMANDOS
 C →  ID(0)(1)(2) [ "["E (3)(12) "]" ] =  E(4)  |  
