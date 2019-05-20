@@ -1,0 +1,17 @@
+
+D → VAR { ( INTEGER | CHAR ) ID [ATR(1)] { ,ID [ATR(1)]}*; }+ | CONST ID = [-(2)] CONSTANTE(3)(1);
+ATR → = [-(2)] CONSTANTE(3) | “[” CONSTANTE(3) “]”
+
+
+(1){ se id.tipo == TIPO_INTEIRO
+            id.endereco = nEnd(2);
+            sword ATR.lex
+        senao se id.tipo == TIPO_CARACTERE
+            id.endereco = nEnd(1);
+            byte ATR.lex
+        senao se id.lex == TIPO_HEXADECIMAL
+            id.endereco = nEnd(1);
+            byte hexToInt(ATR.lex)
+
+(2){ ATR.lex = '-'}
+(3){ ATR.lex = constante.lex}

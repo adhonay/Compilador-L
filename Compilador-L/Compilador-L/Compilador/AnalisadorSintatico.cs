@@ -86,10 +86,9 @@ namespace Compilador_L.Compilador
                         _Daux.tipo = Simbolos.TIPO_CARACTERE;
 						casaToken(TabelaSimbolos.CHAR);
 					}
-                   
+                         //recebo o ID
                     auxID = tokenE;
 					casaToken(TabelaSimbolos.ID);
-
                     //ação semantica 5
                     if(auxID.classe == Simbolos.SEM_CLASSE)
                     {
@@ -103,15 +102,12 @@ namespace Compilador_L.Compilador
                     {
                         // erro ID JA ECLARADO
                     }
-                    //fim ação semantica 5 
-
 					if (tokenE.token == TabelaSimbolos.IGUAL || tokenE.token == TabelaSimbolos.ABCOLCHETE)
 					{
                         Atr(_D,auxID.tipo);
 					}
-
                     //inicio ação semantica 9
-                    if(_D.tipo != auxID.tipo) 
+                    if(_D.tipo != auxID.tipo) //atr.tipo != id.tipo erro
                     {
                         //erro tipos incmpativeis
                     }
@@ -120,13 +116,11 @@ namespace Compilador_L.Compilador
                         auxID.tamanho = _D.tamanho;
                     }
                     //fim ação semantica 9
-
 					while (tokenE.token == TabelaSimbolos.VIRGULA)
 					{
 						casaToken(TabelaSimbolos.VIRGULA);
                         auxID = tokenE;
 						casaToken(TabelaSimbolos.ID);
-
                         //inicio ação semantica 5
                         if (auxID.classe == Simbolos.SEM_CLASSE)
                         {
@@ -141,7 +135,6 @@ namespace Compilador_L.Compilador
                             // erro ID JA ECLARADO
                         }
                         // fim ação semantica 5
-
                         if (tokenE.token == TabelaSimbolos.IGUAL || tokenE.token == TabelaSimbolos.ABCOLCHETE)
 						{
                             Atr(_D, auxID.tipo);
@@ -207,7 +200,7 @@ namespace Compilador_L.Compilador
                         auxID.tamanho = auxCONST.tamanho;
                     }
                 }
-                else if(auxCONST.tipo == Simbolos.TIPO_HEXADECIMAL|| auxCONST.tipo == Simbolos.TIPO_CARACTERE)
+                else if(auxCONST.tipo == Simbolos.TIPO_HEXADECIMAL || auxCONST.tipo == Simbolos.TIPO_CARACTERE)
                 {
                     auxID.tipo = Simbolos.TIPO_CARACTERE;
                     auxID.tamanho = auxCONST.tamanho;
@@ -237,7 +230,6 @@ namespace Compilador_L.Compilador
 				casaToken(TabelaSimbolos.ABCOLCHETE);
                 auxCONST = tokenE;
 				casaToken(TabelaSimbolos.CONSTANTE);
-
                 //inicio ação semantica 8
                 if (auxCONST.tipo != Simbolos.TIPO_INTEIRO)
                 {
@@ -249,21 +241,17 @@ namespace Compilador_L.Compilador
                     _Atr.tamanho = int.Parse(auxCONST.lexema);
                 }
                 // fim ação semantica 8
-
 				casaToken(TabelaSimbolos.FECOLCHETE);
 			} else
 			{
 				casaToken(TabelaSimbolos.IGUAL);
 				if (tokenE.token == TabelaSimbolos.MENOS) 
-				{         
+				{                 
 					casaToken(TabelaSimbolos.MENOS);
-                    //inicio ação semantica 6 
                     sinal = true;
-                    //fim ação semantica 6 
                 }
                 auxCONST = tokenE; 
 				casaToken(TabelaSimbolos.CONSTANTE);
-
                 //inicio ação semantica 7
                 if(sinal == true)
                 {
@@ -440,7 +428,7 @@ namespace Compilador_L.Compilador
 				E(_C);
 
                 //inicio ação semantica 8
-                if(_C.tipo != Simbolos.TIPO_LOGICO)
+                if(true/*_C.tipo != Simbolos.TIPO_LOGICO*/)
                 {
                     //ERRO E TEM QUE RETORNAR LOGICO
                 }
@@ -529,7 +517,7 @@ namespace Compilador_L.Compilador
                 {
                    
                 }// fim ação semantica 1, Inicio ação semantica 14
-                if(_auxIDc.tipo == Simbolos.TIPO_LOGICO)
+                if(true/*_auxIDc.tipo == Simbolos.TIPO_LOGICO*/)
                 {
                     
                 }
@@ -605,7 +593,7 @@ namespace Compilador_L.Compilador
 				}
 				else
 				{
-					E();
+					E(_C);
 				}
 				
 				while(tokenE.token == TabelaSimbolos.VIRGULA)
@@ -617,7 +605,7 @@ namespace Compilador_L.Compilador
 					}
 					else
 					{
-						E();
+						E(_C);
 					}
 
 				}
@@ -676,11 +664,13 @@ namespace Compilador_L.Compilador
 		// F -> ABPARENTESES E FEPARENTESES |CONSTANTE| ID[ ABCOLCHETE E FECOLHETE ] | NOT F
 		public void F()
 		{
-			//F -> '(' E ')'
-			if (tokenE.token == TabelaSimbolos.ABPARENTESES)
+            TemporarioSimbolo _F = new TemporarioSimbolo(); 
+
+            //F -> '(' E ')'
+            if (tokenE.token == TabelaSimbolos.ABPARENTESES)
 			{
 				casaToken(TabelaSimbolos.ABPARENTESES);
-				E();
+				E(_F);
 				casaToken(TabelaSimbolos.FEPARENTESES);
 
 			}// F -> CONSTANTE
@@ -694,7 +684,7 @@ namespace Compilador_L.Compilador
 				if(tokenE.token == TabelaSimbolos.ABCOLCHETE)
 				{
 					casaToken(TabelaSimbolos.ABCOLCHETE);
-					E();
+					E(_F);
 					casaToken(TabelaSimbolos.FECOLCHETE);
 				}
 			}// F-> NOT F
