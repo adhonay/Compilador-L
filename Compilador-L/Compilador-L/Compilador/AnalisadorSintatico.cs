@@ -230,10 +230,15 @@ namespace Compilador_L.Compilador
 				casaToken(TabelaSimbolos.ABCOLCHETE);
                 auxCONST = tokenE;
 				casaToken(TabelaSimbolos.CONSTANTE);
+
                 //inicio ação semantica 8
                 if (auxCONST.tipo != Simbolos.TIPO_INTEIRO)
                 {
-                    //erro tipo
+                    Erro.ErroSemantico.Tipos(aLexico.linha);
+                }
+                else if (long.Parse(auxCONST.lexema) > int.MaxValue)
+                {
+                    Erro.ErroSemantico.Tamanho(aLexico.linha);
                 }
                 else
                 {
@@ -257,7 +262,7 @@ namespace Compilador_L.Compilador
                 {
                     if(auxCONST.tipo != Simbolos.TIPO_INTEIRO)
                     {
-                        //ERRO TIPOS 
+                        Erro.ErroSemantico.Tipos(aLexico.linha);
                     }
                     else
                     {
