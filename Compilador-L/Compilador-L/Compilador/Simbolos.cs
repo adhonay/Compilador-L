@@ -35,6 +35,7 @@ namespace Compilador_L.Compilador
         public static readonly byte TIPO_CARACTERE = 6;
         public static readonly byte TIPO_HEXADECIMAL = 7;
         public static readonly byte TIPO_STRING = 8;
+        public static readonly byte TIPO_LOGICO = 9;
 
         public Simbolos()
         {

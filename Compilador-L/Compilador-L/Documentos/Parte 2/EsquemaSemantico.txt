@@ -151,6 +151,7 @@ F → “(” E(1) “)” | CONSTANTE(2) | ID(3)(4) [ “[” (5) E (6) “]”
 		ERRO tipos incompativeis
 	senao
 		F.tipo = id.tipo
+		isVetor = false; isVetorUtilizado = false;
 	}
 
 (8){se F1.tipo != logico
