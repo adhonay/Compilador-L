@@ -648,7 +648,7 @@ namespace Compilador_L.Compilador
                     //  _E.getType() == Symbol.TYPE_LOGICAL ||
                     //_E.getType() == Symbol.TYPE_STRING || _X1.getType() == Symbol.TYPE_LOGICAL ||
                     //_X1.getType() == Symbol.TYPE_STRING
-                    if()
+                    
 
                 }
                 else
