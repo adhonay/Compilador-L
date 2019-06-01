@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
+
 
 /*
  * Pontifícia Universidade Católica de Minas Gerais
@@ -7,7 +9,8 @@ using System.IO;
  * Autores: Adhonay Júnior, Izabela Costa
  * Matricula: 504656, 498535
  **/
-
+// Arrumei a questão do E / constante 
+//arrumei verdadeiro = 1 nao pode ja tinhamos entendido isso com o not que tnha o mesmo sentido defazer verdadeiro
 namespace Compilador_L.Compilador
 {
 	class AnalisadorSintatico
@@ -20,20 +23,33 @@ namespace Compilador_L.Compilador
 		AnalisadorLexico aLexico;
 		Simbolos tokenE;
         TabelaSimbolos tabela;
-		
-		public AnalisadorSintatico(Stream arquivoEntrada)
+        Rotulo r;
+        Buffer bf;
+        Stack<String> aux = new Stack<String>();
+
+        public AnalisadorSintatico(Stream arquivoEntrada)
 		{
             tabela = new TabelaSimbolos();
             aLexico = new AnalisadorLexico(tabela);
             ler = new LerArquivo(arquivoEntrada);
+            r = new Rotulo();
+            bf = new Buffer();
 			tokenE = aLexico.buscarProximoLexema(ler);                 
 		}
 
 		//S-> {D}+ | {C}+
 		public void S()
-		{		
-			
-			do{
+		{
+            // acao semantica [C0]
+            bf.add("sseg SEGMENT STACK        ;início seg. pilha");
+            bf.add("byte 16384 DUP(?)         ;dimensiona pilha");
+            bf.add("sseg ENDS                 ;fim seg. pilha");
+            bf.add("dseg SEGMENT PUBLIC 	;início seg. Dados");
+            bf.add("byte 16384 DUP(?)         ;temporários");
+            bf.add("");
+
+            do
+            {
 				D();
 			} while (tokenE.token == TabelaSimbolos.VAR || tokenE.token == TabelaSimbolos.CONST);
 			if (tokenE.token == TabelaSimbolos.EOF)
@@ -41,7 +57,35 @@ namespace Compilador_L.Compilador
                 //erro ocorre pois o programa deve ter ao menos um comando n pode finalizar após declarações
                 Erro.ErroSintatico.Arquivo(aLexico.linha);
 			}
-			do
+
+            // açaõ semantica [C1]
+            bf.add("");
+            bf.add("dseg ENDS                 ;fim seg. dados");
+            bf.add("");
+            bf.add("cseg SEGMENT PUBLIC 	;início seg. Código");
+            bf.add("ASSUME CS:cseg, DS:dseg");
+            bf.add("_strt:                     ;início do programa");
+            bf.add("mov AX, dseg");
+            bf.add("mov DS, AX");
+
+            while (!aux.empty())
+            {
+                String value = aux.pop();
+                String address = aux.pop();
+
+                bf.add("mov AX, " + value);
+                bf.add("mov DS:[" + address + "], AX");
+            }
+
+
+
+
+
+
+
+
+
+            do
 			{
 				C();
 			} while (tokenE.token == TabelaSimbolos.ID || tokenE.token == TabelaSimbolos.FOR ||
