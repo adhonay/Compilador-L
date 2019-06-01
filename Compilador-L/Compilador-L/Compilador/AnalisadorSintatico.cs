@@ -204,12 +204,16 @@ namespace Compilador_L.Compilador
                         auxID.tamanho = auxCONST.tamanho;
                     }
                 }
-                else if(auxCONST.tipo == Simbolos.TIPO_HEXADECIMAL || auxCONST.tipo == Simbolos.TIPO_CARACTERE)
+                else if(auxCONST.tipo == Simbolos.TIPO_HEXADECIMAL || auxCONST.tipo == Simbolos.TIPO_CARACTERE )
                 {
                     auxID.tipo = Simbolos.TIPO_CARACTERE;
                     auxID.tamanho = auxCONST.tamanho;
                 }
-                else if(auxCONST.tipo == Simbolos.TIPO_INTEIRO)
+                else if(auxCONST.tipo == Simbolos.TIPO_INTEIRO )
+                {
+                    auxID.tipo = auxCONST.tipo;
+                    auxID.tamanho = auxCONST.tamanho;
+                }else if(auxCONST.tipo == Simbolos.TIPO_STRING)
                 {
                     auxID.tipo = auxCONST.tipo;
                     auxID.tamanho = auxCONST.tamanho;
@@ -584,6 +588,10 @@ namespace Compilador_L.Compilador
                         {
                             Erro.ErroSemantico.NaoDeclarado(aLexico.linha, _auxIDc.lexema);
                         }
+                        if (_auxIDc.tamanho > 0)
+                        {
+                            Erro.ErroSemantico.Tipos(aLexico.linha);
+                        }
                         //fim ação semantica 0, inicio ação 10
                         if(_auxIDc.tipo != Simbolos.TIPO_INTEIRO)
                         {
@@ -677,7 +685,9 @@ namespace Compilador_L.Compilador
                 else {
 
                     if (!((_E.tipo == Simbolos.TIPO_INTEIRO && _ES1.tipo == Simbolos.TIPO_INTEIRO)
-                       || (_E.tipo == Simbolos.TIPO_STRING && _ES1.tipo == Simbolos.TIPO_STRING)))
+                       || (_E.tipo == Simbolos.TIPO_STRING && _ES1.tipo == Simbolos.TIPO_STRING)
+                       || (_E.tipo == Simbolos.TIPO_INTEIRO && _ES1.tipo == Simbolos.TIPO_LOGICO)
+                       || (_E.tipo == Simbolos.TIPO_LOGICO && _ES1.tipo == Simbolos.TIPO_INTEIRO)))
                     {
                         Erro.ErroSemantico.Tipos(aLexico.linha);
                     }
