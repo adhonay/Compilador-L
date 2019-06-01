@@ -141,17 +141,18 @@ namespace Compilador_L.Compilador
                         if (tokenE.token == TabelaSimbolos.IGUAL || tokenE.token == TabelaSimbolos.ABCOLCHETE)
 						{
                             Atr(_D, auxID.tipo);
+                            //inicio ação semantica 9
+                            if (_D.tipo != auxID.tipo) //atr.tipo != id.tipo erro
+                            {
+                                Erro.ErroSemantico.Tipos(aLexico.linha);
+                            }
+                            else
+                            {
+                                auxID.tamanho = _D.tamanho;
+                            }
+                            //fim ação semantica 9
                         }
-                        //inicio ação semantica 9
-                        if (_D.tipo != auxID.tipo) //atr.tipo != id.tipo erro
-                        {
-                            Erro.ErroSemantico.Tipos(aLexico.linha);
-                        }
-                        else
-                        {
-                            auxID.tamanho = _D.tamanho;
-                        }
-                        //fim ação semantica 9
+
 
                     }
                     casaToken(TabelaSimbolos.PONTOVIRGULA);
