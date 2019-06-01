@@ -104,18 +104,22 @@ namespace Compilador_L.Compilador
 					if (tokenE.token == TabelaSimbolos.IGUAL || tokenE.token == TabelaSimbolos.ABCOLCHETE)
 					{
                         Atr(_D,auxID.tipo);
-					}
-                    //inicio ação semantica 9
-                    if(_D.tipo != auxID.tipo) //atr.tipo != id.tipo erro
-                    {
-                        Erro.ErroSemantico.Tipos(aLexico.linha);
+
+                        //inicio ação semantica 9
+                        if (_D.tipo != auxID.tipo) //atr.tipo != id.tipo erro
+                        {
+                            Erro.ErroSemantico.Tipos(aLexico.linha);
+                        }
+                        else
+                        {
+                            auxID.tamanho = _D.tamanho;
+                        }
+                        //fim ação semantica 9
+
+
                     }
-                    else
-                    {
-                        auxID.tamanho = _D.tamanho;
-                    }
-                    //fim ação semantica 9
-					while (tokenE.token == TabelaSimbolos.VIRGULA)
+
+                    while (tokenE.token == TabelaSimbolos.VIRGULA)
 					{
 						casaToken(TabelaSimbolos.VIRGULA);
                         auxID = tokenE;
@@ -645,21 +649,20 @@ namespace Compilador_L.Compilador
                 //inicio ação semantica
                 if(temp != TabelaSimbolos.IGUAL)
                 {
-                    //  _E.getType() == Symbol.TYPE_LOGICAL ||
-                    //_E.getType() == Symbol.TYPE_STRING || _X1.getType() == Symbol.TYPE_LOGICAL ||
-                    //_X1.getType() == Symbol.TYPE_STRING
-                    
+                    if (_E.tipo != Simbolos.TIPO_INTEIRO || _ES1.tipo != Simbolos.TIPO_INTEIRO)
+                    {
+                        Erro.ErroSemantico.Tipos(aLexico.linha);
+                    }
+                }
+                else {
+
+                    if (!((_E.tipo == Simbolos.TIPO_INTEIRO && _ES1.tipo == Simbolos.TIPO_INTEIRO)
+                       || (_E.tipo == Simbolos.TIPO_STRING && _ES1.tipo == Simbolos.TIPO_STRING)))
+                    {
+                        Erro.ErroSemantico.Tipos(aLexico.linha);
+                    }
 
                 }
-                else
-                {
-                    //((_E.getType() == Symbol.TYPE_LOGICAL || _X1.getType() == Symbol.TYPE_LOGICAL 
-                    //|| (_E.getType() == Symbol.TYPE_STRING ^ _X1.getType() == Symbol.TYPE_STRING))
-
-                }
-
-                //fim ação semantica 
-
 
             }
 
@@ -672,15 +675,17 @@ namespace Compilador_L.Compilador
 
             if (tokenE.token == TabelaSimbolos.MAIS || tokenE.token == TabelaSimbolos.MENOS)
 			{
-                casaToken(tokenE.token);
-                opcao = true;
                 if (tokenE.token == TabelaSimbolos.MAIS)
                 {
                     opMais = true;
                 }
-                else {
+                else
+                {
                     opMenos = true;
-                }     
+                }
+                casaToken(tokenE.token);
+                opcao = true;
+                  
 			}
 			T(_ES);
             //inicio ação semantica
@@ -741,6 +746,7 @@ namespace Compilador_L.Compilador
 		{
             TemporarioSimbolo _F1 = new TemporarioSimbolo();
             Boolean and=false, mult=false, div=false, mod=false;
+
 			F(_T); // inicio fim ação semantica 9
 			while(tokenE.token == TabelaSimbolos.MULTIPLICACAO || tokenE.token == TabelaSimbolos.DIVISAO ||
 				tokenE.token == TabelaSimbolos.PORCENTAGEM || tokenE.token == TabelaSimbolos.AND)
@@ -767,14 +773,16 @@ namespace Compilador_L.Compilador
                 if( (mult == true || div ==true || mod == true) && (_T.tipo != Simbolos.TIPO_INTEIRO || _F1.tipo != Simbolos.TIPO_INTEIRO) )
                 {
                     Erro.ErroSemantico.Tipos(aLexico.linha);
+
                 }            
                 else if(and == true && (_T.tipo != Simbolos.TIPO_LOGICO || _F1.tipo != Simbolos.TIPO_LOGICO))
                 {
                     Erro.ErroSemantico.Tipos(aLexico.linha);
                 }
                 //fim ação semantica 10
+                and = false; mult = false; div = false; mod = false;
 
-			}
+            }
 		}
 		// F -> ABPARENTESES E FEPARENTESES |CONSTANTE| ID[ ABCOLCHETE E FECOLHETE ] | NOT F
 		public void F(TemporarioSimbolo _F)
