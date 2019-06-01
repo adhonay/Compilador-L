@@ -652,7 +652,7 @@ namespace Compilador_L.Compilador
                     if (_E.tipo != Simbolos.TIPO_INTEIRO || _ES1.tipo != Simbolos.TIPO_INTEIRO)
                     {
                         Erro.ErroSemantico.Tipos(aLexico.linha);
-                    }
+                    }                   
                 }
                 else {
 
@@ -663,6 +663,7 @@ namespace Compilador_L.Compilador
                     }
 
                 }
+                _E.tipo = Simbolos.TIPO_LOGICO;
 
             }
 
@@ -787,7 +788,7 @@ namespace Compilador_L.Compilador
 		// F -> ABPARENTESES E FEPARENTESES |CONSTANTE| ID[ ABCOLCHETE E FECOLHETE ] | NOT F
 		public void F(TemporarioSimbolo _F)
 		{
-            TemporarioSimbolo _F1 = new TemporarioSimbolo();
+            TemporarioSimbolo _F1 = new TemporarioSimbolo(); 
             Simbolos _auxCONSTf = new Simbolos("", Byte.MaxValue);
             Simbolos _auxIDf = new Simbolos("", Byte.MaxValue);
             Boolean isVetor = false, isVetorUtilizado = false;
