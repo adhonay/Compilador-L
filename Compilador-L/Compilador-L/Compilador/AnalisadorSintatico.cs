@@ -310,11 +310,13 @@ namespace Compilador_L.Compilador
                 //inicio ação semantica 0
                 if(_auxIDc.classe == Simbolos.SEM_CLASSE)
                 {
+                    Erro.ErroSemantico.NaoDeclarado(aLexico.linha, _auxIDc.lexema);
                     //erro id não declarado
                 }
                 //inicio ação semantica 1
                 else if(_auxIDc.classe == Simbolos.CLASSE_CONST)
                 {
+                    Erro.ErroSemantico.Classe(aLexico.linha, _auxIDc.lexema);
                     //erro tipos incompativeis (um identificador constante n pode ter atribuiçao)
                 }
                 //fim ação semantica 2
@@ -330,11 +332,12 @@ namespace Compilador_L.Compilador
                     //inicio açao semantica 3
                     if (_C.tipo != Simbolos.TIPO_INTEIRO)
                     {
+                        Erro.ErroSemantico.Tipos(aLexico.linha);
                         //erro dentro do colchete so pode ter numero
                     }                 
                     else if (_auxIDc.tamanho == 0) 
                     {
-                        //erro 
+                        Erro.ErroSemantico.Tipos(aLexico.linha); 
                     }//fim ação 3, inicio ação semantica 12
                     else
                     {
@@ -348,6 +351,7 @@ namespace Compilador_L.Compilador
                 //inicio ação semantica 4
                 if(_C.tipo != _auxIDc.tipo || isVetor != vetorUtilizado)
                 {
+                    Erro.ErroSemantico.Tipos(aLexico.linha);
                     //ERRO 
                 }
                 //fim ação semantica 4
@@ -363,16 +367,19 @@ namespace Compilador_L.Compilador
                 //inicio ação semantica 0
                 if (_auxIDc.classe == Simbolos.SEM_CLASSE)
                 {
+                    Erro.ErroSemantico.NaoDeclarado(aLexico.linha, _auxIDc.lexema);
                     //erro id não declarado
                 }
                 //inicio ação semantica 1
                 if (_auxIDc.classe == Simbolos.CLASSE_CONST)
                 {
+                    Erro.ErroSemantico.Classe(aLexico.linha, _auxIDc.lexema);
                     //ERRO IDENTIFICADOR É UMA CONSTANTE NÃO PODE RECEBER NADA
                 }
                 //incio ação semantica 5
                 if(_auxIDc.tipo != Simbolos.TIPO_INTEIRO || _auxIDc.tamanho > 0)
                 {
+                    Erro.ErroSemantico.Tipos(aLexico.linha);
                     // erro id no for tem q ser inteiro para fazer for id = numero
                 }
                 //fim ação semantica 5
@@ -382,6 +389,7 @@ namespace Compilador_L.Compilador
                 //inicio ação semantica 6
                 if(_C.tipo != Simbolos.TIPO_INTEIRO)
                 {
+                    Erro.ErroSemantico.Tipos(aLexico.linha);
                     //erro , E tem qe retornar um int para o for
                 }
                 //fim ação semantica 6
@@ -392,6 +400,7 @@ namespace Compilador_L.Compilador
                 //inicio ação semantica 6
                 if (_C.tipo != Simbolos.TIPO_INTEIRO)
                 {
+                    Erro.ErroSemantico.Tipos(aLexico.linha);
                     //erro , E tem qe retornar um int para o for
                 }
                 //fim ação semantica 6
@@ -407,6 +416,7 @@ namespace Compilador_L.Compilador
                     //ação semantica 7
                     if(_auxCONSTc.tipo != Simbolos.TIPO_INTEIRO)
                     {
+                        Erro.ErroSemantico.Tipos(aLexico.linha);
                         //erro a constante no step tem q ser int
                     }
                     //fim ação semantica 7
@@ -437,8 +447,9 @@ namespace Compilador_L.Compilador
 				E(_C);
 
                 //inicio ação semantica 8
-                if(true/*_C.tipo != Simbolos.TIPO_LOGICO*/)
+                if(_C.tipo != Simbolos.TIPO_LOGICO)
                 {
+                    Erro.ErroSemantico.Tipos(aLexico.linha);
                     //ERRO E TEM QUE RETORNAR LOGICO
                 }
                 //fim ação semantica 8
@@ -520,16 +531,18 @@ namespace Compilador_L.Compilador
                 //inicio ação semantica 0
                 if (_auxIDc.classe == Simbolos.SEM_CLASSE)
                 {
-                  
+                    Erro.ErroSemantico.NaoDeclarado(aLexico.linha, _auxIDc.lexema);
+                 
                 }
                 // fim ação 0 , inicio ação 01
                 if (_auxIDc.classe == Simbolos.CLASSE_CONST) 
                 {
-                   
+                    Erro.ErroSemantico.Classe(aLexico.linha, _auxIDc.lexema);
+
                 }// fim ação semantica 1, Inicio ação semantica 14
-                if(true/*_auxIDc.tipo == Simbolos.TIPO_LOGICO*/)
+                if(_auxIDc.tipo == Simbolos.TIPO_LOGICO)
                 {
-                    
+                    Erro.ErroSemantico.Tipos(aLexico.linha);
                 }
                 // fim ação semantica 14, inicio ação semantica 2
                 if(_auxIDc.tamanho > 0)
@@ -541,8 +554,9 @@ namespace Compilador_L.Compilador
 				if(tokenE.token == TabelaSimbolos.ABCOLCHETE)
 				{
                     //inicio ação semantica 9
-                    if(_auxIDc.tamanho <= 0)
+                    if(_auxIDc.tamanho == 0)
                     {
+                        Erro.ErroSemantico.Tipos(aLexico.linha);
                        //erro 
                     }//fim ação 9
 					casaToken(TabelaSimbolos.ABCOLCHETE);
@@ -553,6 +567,7 @@ namespace Compilador_L.Compilador
                         //inicio ação semantica 7
                         if(_auxCONSTc.tipo != Simbolos.TIPO_INTEIRO)
                         {
+                            Erro.ErroSemantico.Tipos(aLexico.linha);
                             //erro
                         }//fim ação semantica 7
 
@@ -566,12 +581,13 @@ namespace Compilador_L.Compilador
                         //inicio ação semantica 0
                         if(_auxIDc.classe == Simbolos.SEM_CLASSE)
                         {
-                            //erro
+                            Erro.ErroSemantico.NaoDeclarado(aLexico.linha, _auxIDc.lexema);
                         }
                         //fim ação semantica 0, inicio ação 10
                         if(_auxIDc.tipo != Simbolos.TIPO_INTEIRO)
                         {
-                            //erro
+                            Erro.ErroSemantico.Tipos(aLexico.linha);
+
                         }//fim ação semantica 10
 
                         //inicio ação semantica 12
@@ -584,41 +600,44 @@ namespace Compilador_L.Compilador
                 //inicio ação semantica 13
                 if(vetorUtilizado != isVetor)
                 {
-                    //erro
+                    Erro.ErroSemantico.Tipos(aLexico.linha);
                 }
                 //fim ação semtnica 13
 				casaToken(TabelaSimbolos.FEPARENTESES);
 				casaToken(TabelaSimbolos.PONTOVIRGULA);
 
 			}
-			// C-> (WRITELN | WRITE) ABPARENTESES (E | CONSTANTE ) {VIRGULA ( E | CONSTANTE)  }*  FEPARENTESES PONTOVIRGULA
+			// C-> (WRITELN | WRITE) ABPARENTESES (E | CONSTANTE) {VIRGULA ( E | CONSTANTE)  }*  FEPARENTESES PONTOVIRGULA
 			else if (tokenE.token == TabelaSimbolos.WRITE || tokenE.token == TabelaSimbolos.WRITELN) //---- QUEBRA DE LINHA EM LN !?
 			{
-				casaToken(tokenE.token);
-				casaToken(TabelaSimbolos.ABPARENTESES);
-
-				if(tokenE.token == TabelaSimbolos.CONSTANTE)
-				{
-					casaToken(TabelaSimbolos.CONSTANTE);
-				}
-				else
-				{
-					E(_C);
-				}
+                if(tokenE.token == TabelaSimbolos.WRITE)
+                {
+                    casaToken(TabelaSimbolos.WRITE);
+                }
+                else
+                {
+                    casaToken(TabelaSimbolos.WRITELN);
+                }
 				
+				casaToken(TabelaSimbolos.ABPARENTESES);
+                
+				E(_C);
+
+                if(_C.tipo == Simbolos.TIPO_LOGICO)
+                {
+                    Erro.ErroSemantico.Tipos(aLexico.linha);
+                }
+                
 				while(tokenE.token == TabelaSimbolos.VIRGULA)
 				{
-					casaToken(TabelaSimbolos.VIRGULA);
-					if (tokenE.token == TabelaSimbolos.CONSTANTE)
-					{
-						casaToken(TabelaSimbolos.CONSTANTE);
-					}
-					else
-					{
-						E(_C);
-					}
+					casaToken(TabelaSimbolos.VIRGULA);									
+					E(_C);
 
-				}
+                    if (_C.tipo == Simbolos.TIPO_LOGICO)
+                    {
+                        Erro.ErroSemantico.Tipos(aLexico.linha);
+                    }
+                }
 				casaToken(TabelaSimbolos.FEPARENTESES);
 				casaToken(TabelaSimbolos.PONTOVIRGULA);
 
@@ -661,12 +680,9 @@ namespace Compilador_L.Compilador
                     {
                         Erro.ErroSemantico.Tipos(aLexico.linha);
                     }
-
                 }
                 _E.tipo = Simbolos.TIPO_LOGICO;
-
             }
-
 		}
 		//ES -> [ + | - ] T { ( + | - | or ) T }*
 		public void ES(TemporarioSimbolo _ES)
