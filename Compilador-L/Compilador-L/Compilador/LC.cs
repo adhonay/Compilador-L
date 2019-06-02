@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-/*
+﻿/*
  * Pontifícia Universidade Católica de Minas Gerais
  * Compilador
  * Autores: Adhonay Júnior, Izabela Costa
  * Matricula: 504656, 498535
  **/
+
+using System;
+using System.IO;
+
 namespace Compilador_L.Compilador
 {
     class LC
@@ -18,7 +15,7 @@ namespace Compilador_L.Compilador
         static void Main(string[] args)
         {
             Console.WriteLine("Digite o nome e extensão do arquivo:");
-            var arquivo = "exemplo21.l";//Console.ReadLine();
+            var arquivo = "exemplo.l";//Console.ReadLine();
 
             if (File.Exists(arquivo))
             {

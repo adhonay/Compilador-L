@@ -1,11 +1,10 @@
-﻿using System;
-
-/*
+﻿/*
  * Pontifícia Universidade Católica de Minas Gerais
  * Compilador
  * Autores: Adhonay Júnior, Izabela Costa
  * Matricula: 504656, 498535
  **/
+using System;
 
 namespace Compilador_L.Compilador
 {

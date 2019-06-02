@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
  * Pontifícia Universidade Católica de Minas Gerais
  * Compilador
  * Autores: Adhonay Júnior, Izabela Costa

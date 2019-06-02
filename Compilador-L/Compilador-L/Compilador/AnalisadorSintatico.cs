@@ -1,14 +1,16 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-
-
-/*
+﻿/*
  * Pontifícia Universidade Católica de Minas Gerais
  * Compilador
  * Autores: Adhonay Júnior, Izabela Costa
  * Matricula: 504656, 498535
  **/
+
+using System;
+using System.IO;
+using System.Collections.Generic;
+
+
+
 // Arrumei a questão do E / constante 
 //arrumei verdadeiro = 1 nao pode ja tinhamos entendido isso com o not que tnha o mesmo sentido defazer verdadeiro
 namespace Compilador_L.Compilador
@@ -24,7 +26,7 @@ namespace Compilador_L.Compilador
 		Simbolos tokenE;
         TabelaSimbolos tabela;
         Rotulo r;
-        Buffer bf;
+        Arquivo a;
         Stack<String> aux = new Stack<String>();
 
         public AnalisadorSintatico(Stream arquivoEntrada)
@@ -33,7 +35,7 @@ namespace Compilador_L.Compilador
             aLexico = new AnalisadorLexico(tabela);
             ler = new LerArquivo(arquivoEntrada);
             r = new Rotulo();
-            bf = new Buffer();
+            a = new Arquivo();
 			tokenE = aLexico.buscarProximoLexema(ler);                 
 		}
 
@@ -41,12 +43,12 @@ namespace Compilador_L.Compilador
 		public void S()
 		{
             // acao semantica [C0]
-            bf.add("sseg SEGMENT STACK        ;início seg. pilha");
-            bf.add("byte 16384 DUP(?)         ;dimensiona pilha");
-            bf.add("sseg ENDS                 ;fim seg. pilha");
-            bf.add("dseg SEGMENT PUBLIC 	;início seg. Dados");
-            bf.add("byte 16384 DUP(?)         ;temporários");
-            bf.add("");
+            a.add("sseg SEGMENT STACK       ;início seg. pilha");
+            a.add("byte 16384 DUP(?)        ;dimensiona pilha");
+            a.add("sseg ENDS  adhonay              ;fim seg. pilha");                                                                           
+            a.add("dseg SEGMENT PUBLIC 	    ;início seg. Dados");
+            a.add("byte 16384 DUP(?)        ;temporários");
+            a.add("");
 
             do
             {
@@ -59,34 +61,19 @@ namespace Compilador_L.Compilador
 			}
 
             // açaõ semantica [C1]
-            bf.add("");
-            bf.add("dseg ENDS                 ;fim seg. dados");
-            bf.add("");
-            bf.add("cseg SEGMENT PUBLIC 	;início seg. Código");
-            bf.add("ASSUME CS:cseg, DS:dseg");
-            bf.add("_strt:                     ;início do programa");
-            bf.add("mov AX, dseg");
-            bf.add("mov DS, AX");
+            a.add("");
+            a.add("dseg ENDS                    ;fim seg. dados");
+            a.add("");
+            a.add("cseg SEGMENT PUBLIC 	        ;início seg. Código");
+            a.add("ASSUME CS:cseg, DS:dseg");   
+            a.add("_strt:                       ;início do programa");
+            a.add("mov AX, dseg");
+            a.add("mov DS, AX");
 
-            while (!aux.empty())
-            {
-                String value = aux.pop();
-                String address = aux.pop();
-
-                bf.add("mov AX, " + value);
-                bf.add("mov DS:[" + address + "], AX");
-            }
-
-
-
-
-
-
-
-
+            a.print("c:/8086/arquivo.asm");
 
             do
-			{
+            {
 				C();
 			} while (tokenE.token == TabelaSimbolos.ID || tokenE.token == TabelaSimbolos.FOR ||
 					tokenE.token == TabelaSimbolos.IF|| tokenE.token == TabelaSimbolos.PONTOVIRGULA ||

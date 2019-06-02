@@ -48,7 +48,8 @@
   <ItemGroup>
     <Compile Include="Compilador\AnalisadorLexico.cs" />
     <Compile Include="Compilador\AnalisadorSintatico.cs" />
-    <Compile Include="Compilador\Buffer.cs" />
+    <Compile Include="Compilador\Memoria .cs" />
+    <Compile Include="Compilador\Arquivo.cs" />
     <Compile Include="Compilador\ContadorLinha.cs" />
     <Compile Include="Compilador\Erro.cs" />
     <Compile Include="Compilador\LC.cs" />
