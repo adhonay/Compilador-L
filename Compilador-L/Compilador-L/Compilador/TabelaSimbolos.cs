@@ -138,6 +138,12 @@ namespace Compilador_L.Compilador
             return tabela.Where(o => o.Key == lexema).FirstOrDefault().Value;
         }
 
+        public void inserirEndereco(string lexema, int endereco)
+        {
+            var retorno = tabela.Where(o => o.Key == lexema).FirstOrDefault().Value;
+            retorno.endereco = endereco;
+        }
+
 
     }
 }

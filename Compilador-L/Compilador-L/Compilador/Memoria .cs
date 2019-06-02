@@ -55,14 +55,27 @@ public class Memoria
     }
 
    
-    public int alocarString(int size)
+    public int alocarString(int tamanho)
     {
         int address = memoria;
-        memoria += size;
+        memoria += tamanho;
         return address;
     }
 
-    public int alocarTemporarioyCaractere()
+    public int alocarVetorInterio(int tamanho)
+    {
+        int address = memoria;
+        memoria += (2 * tamanho);
+        return address;
+    }
+    public int alocarVetorCaractere(int tamanho)
+    {
+        int address = memoria;
+        memoria += tamanho;
+        return address;
+    }
+
+    public int alocarTemporarioCaractere()
     {
         int address = temporario;
         temporario += 1;
