@@ -560,7 +560,7 @@ namespace Compilador_L.Compilador
                     }//fim ação 3, inicio ação semantica 12
                     else
                     {
-                        vetorUtilizado = true;
+                       vetorUtilizado = true;
                     }
                     //fim ação semantica 12
                     casaToken(TabelaSimbolos.FECOLCHETE);
@@ -584,12 +584,21 @@ namespace Compilador_L.Compilador
 
                     //ERRO 
                 }
-                else if (_C.tamanho > 0 && _auxIDc.tamanho > 0)
+                else if (_C.tamanho > 0 && _auxIDc.tamanho > 0 && vetorUtilizado == false)
                 {
+                    if (_C.tipo == Simbolos.TIPO_INTEIRO || _auxIDc.tipo == Simbolos.TIPO_INTEIRO)
+                    {
+                        Erro.ErroSemantico.Tipos(aLexico.linha);
+                    }
+
                     if (_C.tamanho > _auxIDc.tamanho)
                     {
                         Erro.ErroSemantico.Tamanho(aLexico.linha);
-                    }
+                    }                  
+                }
+                else if (_C.tamanho > 0 && _auxIDc.tamanho > 0 && vetorUtilizado == true)
+                {
+                        Erro.ErroSemantico.Tipos(aLexico.linha);
                 }
                 else if (_C.tamanho == Simbolos.ESCALAR && _auxIDc.tamanho > 0 && vetorUtilizado == false)
                 {
@@ -930,6 +939,12 @@ namespace Compilador_L.Compilador
                         Erro.ErroSemantico.Tipos(aLexico.linha);
                     }
                 }
+
+                if (_E.tamanho != _ES1.tamanho)
+                {
+                    Erro.ErroSemantico.Tipos(aLexico.linha);
+                }
+
                 _E.tipo = Simbolos.TIPO_LOGICO;
             }
         }
