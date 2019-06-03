@@ -248,7 +248,6 @@ namespace Compilador_L.Compilador
                             //fim ação semantica 9
                         }
 
-
                         if (inicializado)
                         {
                             if (_D.tipo == Simbolos.TIPO_INTEIRO)
@@ -376,7 +375,7 @@ namespace Compilador_L.Compilador
                 }
                 else
                 {
-                    //erro tipo inesperado (nao é int, char ou hexa) sendo atribuido a constante
+                    //erro tipo inesperado (nao é int, char, hexa ou string) sendo atribuido a constante
                     Erro.ErroSemantico.Tipos(aLexico.linha);
                 }
                 //fim ação semantica 10
@@ -1039,7 +1038,13 @@ namespace Compilador_L.Compilador
 
                 //inicio ação semantica 2
                 _F.tipo = _auxCONSTf.tipo;
+                _F.tamanho = _auxCONSTf.tamanho;
                 //fim ação semantica 2
+
+                if (_auxCONSTf.tipo == Simbolos.TIPO_STRING)
+                {
+                    _F.tamanho = _auxCONSTf.lexema.Length;
+                }
 
 
             }// F-> ID[ "[" E "]" ] 
