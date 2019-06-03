@@ -150,7 +150,7 @@ namespace Compilador_L.Compilador
                         //fim ação semantica 9
 
                     }
-                    //GERAÇÃO DE CODIGO PARA DECLARAÇÃO
+                    //GERAÇÃO DE CODIGO DELCARAÇÃO VAR INICIO
 
                     if (inicializado)
                     {
@@ -183,7 +183,7 @@ namespace Compilador_L.Compilador
                             {
                                 tabela.inserirEndereco(auxID.lexema, m.alocarCaractere());
                                 char caractere = _D.valor[1];
-                                a.add("byte " + caractere + "                   ;declaração var char Duvida: retornar char ou valor ?");
+                                a.add("byte " + (int)caractere + "                   ;declaração var char");
                             }
                             else
                             {// se for vetor.
@@ -211,6 +211,7 @@ namespace Compilador_L.Compilador
                             a.add("byte ?                   ;declaração var char não inicializada");
                         }
                     }
+                    //GERAÇÃO DE CODIGO DELCARAÇÃO VAR FIM
 
                     while (tokenE.token == TabelaSimbolos.VIRGULA)
                     {
@@ -247,6 +248,7 @@ namespace Compilador_L.Compilador
                             }
                             //fim ação semantica 9
                         }
+                        //GERAÇÃO DE CODIGO DELCARAÇÃO VAR INICIO
 
                         if (inicializado)
                         {
@@ -280,7 +282,7 @@ namespace Compilador_L.Compilador
                                 {
                                     tabela.inserirEndereco(auxID.lexema, m.alocarCaractere());
                                     char caractere = _D.valor[1];
-                                    a.add("byte " + caractere + "                   ;declaração var char Duvida: retornar char ou valor ?");
+                                    a.add("byte " + (int)caractere + "                   ;declaração var char");
                                 }
                                 else
                                 {// se for vetor.
@@ -309,6 +311,7 @@ namespace Compilador_L.Compilador
                             }
                         }
                     }
+                    //GERAÇÃO DE CODIGO DELCARAÇÃO VAR FIM
 
                     casaToken(TabelaSimbolos.PONTOVIRGULA);
 
@@ -379,6 +382,45 @@ namespace Compilador_L.Compilador
                     Erro.ErroSemantico.Tipos(aLexico.linha);
                 }
                 //fim ação semantica 10
+
+
+                //GERAÇÃO DE CODIGO DELCARAÇÃO CONST INICIO
+
+                if (auxCONST.tipo == Simbolos.TIPO_INTEIRO)
+                {
+                    tabela.inserirEndereco(auxID.lexema, m.alocarInteiro());
+
+                    if (sinal == true)
+                    {
+                        a.add("sword -" + int.Parse(auxCONST.lexema) + "                 ;declaração const int negativa");
+                    }
+                    else
+                    {
+                        a.add("sword " + int.Parse(auxCONST.lexema) + "                  ;declaração const int");
+                    }
+                }
+                else if (auxCONST.tipo == Simbolos.TIPO_CARACTERE)
+                {
+                    tabela.inserirEndereco(auxID.lexema, m.alocarCaractere());
+                    char caractere = auxCONST.lexema[1];
+                    a.add("byte " + (int)caractere + "                  ;declaração const char");
+
+                }
+                else if (auxCONST.tipo == Simbolos.TIPO_HEXADECIMAL)
+                {
+                    tabela.inserirEndereco(auxID.lexema, m.alocarCaractere());
+                    var hex = Convert.ToInt64(auxCONST.lexema, 16);
+                    a.add("byte " + hex + "                 ;declaração const char hex");
+
+                }
+                else if (auxCONST.tipo == Simbolos.TIPO_STRING)
+                {
+                    int tamanho = auxCONST.lexema.Length;
+                    tabela.inserirEndereco(auxID.lexema, m.alocarString(tamanho));
+                    a.add("byte " + tamanho + "                  ;declaração const string");
+                }
+
+                //GERAÇÃO DE CODIGO DELCARAÇÃO CONST FIM
 
                 casaToken(TabelaSimbolos.PONTOVIRGULA);
 			}
@@ -1004,8 +1046,7 @@ namespace Compilador_L.Compilador
                     Erro.ErroSemantico.Tipos(aLexico.linha);
 
                 }
-                else if (and == true && (_T.tipo != Simbolos.TIPO_LOGICO || _F1.tipo != Simbolos.TIPO_LOGICO ||
-                     _F1.tipo != Simbolos.TIPO_INTEIRO || _T.tamanho > 0 || _F1.tamanho > 0))
+                else if (and == true && (_T.tipo != Simbolos.TIPO_LOGICO || _F1.tipo != Simbolos.TIPO_LOGICO || _T.tamanho > 0 || _F1.tamanho > 0))
                 {
                     Erro.ErroSemantico.Tipos(aLexico.linha);
                 }
