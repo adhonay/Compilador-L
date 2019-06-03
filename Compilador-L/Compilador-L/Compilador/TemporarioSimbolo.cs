@@ -19,7 +19,7 @@ namespace Compilador_L.Compilador
 		{
             this.tipo = 0;
             this.classe = 0;
-            this.tamanho = -1;
+            this.tamanho = 0;
             this.endereco = -1;
             this.valor = "";
         }

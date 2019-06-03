@@ -45,10 +45,11 @@ namespace Compilador_L.Compilador
 		public void S()
 		{
             // acao semantica  GC
+                                            
             a.add("sseg SEGMENT STACK       ;início seg. pilha");
             a.add("byte 16384 DUP(?)        ;dimensiona pilha");
             a.add("sseg ENDS                ;fim seg. pilha");                                                                           
-            a.add("dseg SEGMENT PUBLIC 	    ;início seg. Dados");
+            a.add("dseg SEGMENT PUBLIC 	 ;início seg. Dados");
             a.add("byte 16384 DUP(?)        ;temporários");
             a.add("");
 
@@ -64,7 +65,7 @@ namespace Compilador_L.Compilador
 
             // açaõ semantica GC
             a.add("");
-            a.add("dseg ENDS                    ;fim seg. dados");
+            a.add("dseg ENDS                ;fim seg. dados");
             a.print("c:/8086/arquivo.asm");
 
             do
@@ -158,41 +159,65 @@ namespace Compilador_L.Compilador
                             if (_D.tamanho == Simbolos.ESCALAR)
                             {
                                 tabela.inserirEndereco(auxID.lexema, m.alocarInteiro());
-                                a.add("mov AX, " + "mov DS:[" + _D.endereco + "]");
-                                a.add("mov DS:[" + auxID.endereco + "], AX");
-                                //a.add("sword " +  + "   ;var. int");
+
+                                var sinalConstante =  _D.valor.Substring(0, 1);
+                                if(sinalConstante == "-")
+                                {
+                                    int valor = (int.Parse(_D.valor.Substring(1))*-1);
+                                    a.add("sword " + valor + "                ;declaração var int neg");
+                                }
+                                else
+                                {
+                                    a.add("sword " + int.Parse(_D.valor) + "                 ;declaração var int pos");
+                                }
                             }
                             else {// se for vetor.
                                 tabela.inserirEndereco(auxID.lexema, m.alocarVetorInterio(_D.tamanho));
-                                a.add("byte " + _D.tamanho + "   ;var. int");
+                                a.add("byte " + _D.tamanho + " DUP(?)           ;declaração var int vetor");
                             } 
 
                         }
                         else if (_D.tipo == Simbolos.TIPO_CARACTERE)
                         {
                             if (_D.tamanho == Simbolos.ESCALAR)
-                            {//TESTAR O O CARACTERE 
+                            {
                                 tabela.inserirEndereco(auxID.lexema, m.alocarCaractere());
-                                a.add("mov AX, " + "mov DS:[" + _D.endereco + "]");
-                                a.add("mov DS:[" + auxID.endereco + "], AX");
-                                var caratere = auxID.lexema.Substring(1, auxID.lexema.Length - 2);
-                                a.add("byte " + caratere + "   ;var. int");
+                                char caractere = _D.valor[1];
+                                a.add("byte " + caractere + "                   ;declaração var char Duvida: retornar char ou valor ?");
                             }
                             else
                             {// se for vetor.
-                                tabela.inserirEndereco(auxID.lexema, m.alocarVetorInterio(_D.tamanho));
-                                a.add("byte " + _D.tamanho + "   ;var. int");
+                                tabela.inserirEndereco(auxID.lexema, m.alocarVetorCaractere(_D.tamanho));
+                                a.add("byte " + _D.tamanho + " DUP(?)           ;declaração var char vetor");
                             }
+                        }
+                        else if (_D.tipo == Simbolos.TIPO_HEXADECIMAL)
+                        {
+                            tabela.inserirEndereco(auxID.lexema, m.alocarCaractere());
+                            var hex = Convert.ToInt64(_D.valor, 16);
+                            a.add("byte " + hex + "                 ;declaração var char hex");
+                        }
+                    }
+                    else
+                    {
+                        if (_Daux.tipo == Simbolos.TIPO_INTEIRO)
+                        {
+                            tabela.inserirEndereco(auxID.lexema, m.alocarInteiro());
+                            a.add("sword ?                  ;declaração var int não inicializada");
+                        }
+                        else if (_Daux.tipo == Simbolos.TIPO_CARACTERE)
+                        {
+                            tabela.inserirEndereco(auxID.lexema, m.alocarCaractere());
+                            a.add("byte ?                   ;declaração var char não inicializada");
                         }
                     }
 
-
-
                     while (tokenE.token == TabelaSimbolos.VIRGULA)
-					{
-						casaToken(TabelaSimbolos.VIRGULA);
+                    {
+                        inicializado = false;
+                        casaToken(TabelaSimbolos.VIRGULA);
                         auxID = tokenE;
-						casaToken(TabelaSimbolos.ID);
+                        casaToken(TabelaSimbolos.ID);
                         //inicio ação semantica 5
                         if (auxID.classe == Simbolos.SEM_CLASSE)
                         {
@@ -208,8 +233,9 @@ namespace Compilador_L.Compilador
                         }
                         // fim ação semantica 5
                         if (tokenE.token == TabelaSimbolos.IGUAL || tokenE.token == TabelaSimbolos.ABCOLCHETE)
-						{
+                        {
                             Atr(_D, auxID);
+                            inicializado = true;
                             //inicio ação semantica 9
                             if (_D.tipo != auxID.tipo) //atr.tipo != id.tipo erro
                             {
@@ -223,7 +249,68 @@ namespace Compilador_L.Compilador
                         }
 
 
+                        if (inicializado)
+                        {
+                            if (_D.tipo == Simbolos.TIPO_INTEIRO)
+                            {
+                                if (_D.tamanho == Simbolos.ESCALAR)
+                                {
+                                    tabela.inserirEndereco(auxID.lexema, m.alocarInteiro());
+
+                                    var sinalConstante = _D.valor.Substring(0, 1);
+                                    if (sinalConstante == "-")
+                                    {
+                                        int valor = (int.Parse(_D.valor.Substring(1)) * -1);
+                                        a.add("sword " + valor + "                ;declaração var int neg");
+                                    }
+                                    else
+                                    {
+                                        a.add("sword " + int.Parse(_D.valor) + "                 ;declaração var int pos");
+                                    }
+                                }
+                                else
+                                {// se for vetor.
+                                    tabela.inserirEndereco(auxID.lexema, m.alocarVetorInterio(_D.tamanho));
+                                    a.add("byte " + _D.tamanho + " DUP(?)           ;declaração var int vetor");
+                                }
+
+                            }
+                            else if (_D.tipo == Simbolos.TIPO_CARACTERE)
+                            {
+                                if (_D.tamanho == Simbolos.ESCALAR)
+                                {
+                                    tabela.inserirEndereco(auxID.lexema, m.alocarCaractere());
+                                    char caractere = _D.valor[1];
+                                    a.add("byte " + caractere + "                   ;declaração var char Duvida: retornar char ou valor ?");
+                                }
+                                else
+                                {// se for vetor.
+                                    tabela.inserirEndereco(auxID.lexema, m.alocarVetorCaractere(_D.tamanho));
+                                    a.add("byte " + _D.tamanho + " DUP(?)           ;declaração var char vetor");
+                                }
+                            }
+                            else if (_D.tipo == Simbolos.TIPO_HEXADECIMAL)
+                            {
+                                tabela.inserirEndereco(auxID.lexema, m.alocarCaractere());
+                                var hex = Convert.ToInt64(_D.valor, 16);
+                                a.add("byte " + hex + "                 ;declaração var char hex");
+                            }
+                        }
+                        else
+                        {
+                            if (_Daux.tipo == Simbolos.TIPO_INTEIRO)
+                            {
+                                tabela.inserirEndereco(auxID.lexema, m.alocarInteiro());
+                                a.add("sword ?                  ;declaração var int não inicializada");
+                            }
+                            else if (_Daux.tipo == Simbolos.TIPO_CARACTERE)
+                            {
+                                tabela.inserirEndereco(auxID.lexema, m.alocarCaractere());
+                                a.add("byte ?                   ;declaração var char não inicializada");
+                            }
+                        }
                     }
+
                     casaToken(TabelaSimbolos.PONTOVIRGULA);
 
 				} while (tokenE.token == TabelaSimbolos.CHAR || tokenE.token == TabelaSimbolos.INTEGER);
@@ -347,8 +434,7 @@ namespace Compilador_L.Compilador
                     {
                         _Atr.tipo = auxCONST.tipo;
                         _Atr.tamanho= auxCONST.tamanho;
-                        _Atr.valor = auxCONST.lexema;
-                        //converter para negativo antes de mandar 
+                        _Atr.valor = "-"+auxCONST.lexema;
                     }
 
                 }
@@ -998,6 +1084,7 @@ namespace Compilador_L.Compilador
                     else
                     {
                         isVetorUtilizado = true;
+                        _F.tipo = _auxIDf.tipo;
                         _F.tamanho = Simbolos.ESCALAR;
 
                     }
@@ -1005,9 +1092,11 @@ namespace Compilador_L.Compilador
 
                     casaToken(TabelaSimbolos.FECOLCHETE);
                 }
-
-                _F.tipo = _auxIDf.tipo;
-                _F.tamanho = _auxIDf.tamanho;
+                else
+                {
+                    _F.tipo = _auxIDf.tipo;
+                    _F.tamanho = _auxIDf.tamanho;                 
+                }
                 isVetor = false; isVetorUtilizado = false;
 
                 //fim ação semantica 7
