@@ -14,7 +14,7 @@ namespace Compilador_L.Compilador
     {
         static void Main(string[] args)
         {
-            var arquivo = "exemplo10.l";//Console.ReadLine();
+            var arquivo = "exemplo.l";//Console.ReadLine();
 
             if (File.Exists(arquivo))
             {

@@ -384,10 +384,6 @@ namespace Compilador_L.Compilador
                 {
                     auxID.tipo = auxCONST.tipo;
                     auxID.tamanho = auxCONST.tamanho;
-                }else if(auxCONST.tipo == Simbolos.TIPO_STRING)
-                {
-                    auxID.tipo = auxCONST.tipo;
-                    auxID.tamanho = auxCONST.tamanho;
                 }
                 else
                 {
@@ -426,13 +422,6 @@ namespace Compilador_L.Compilador
                     a.add("byte " + hex + "                 ;declaração const char hex");
 
                 }
-                //else if (auxCONST.tipo == Simbolos.TIPO_STRING)
-                //{
-                //    int tamanho = auxCONST.lexema.Length;
-                //    tabela.inserirEndereco(auxID.lexema, m.alocarString(tamanho));
-                //    a.add("byte " + tamanho + "                  ;declaração const string");
-                //}
-
                 //GERAÇÃO DE CODIGO DELCARAÇÃO CONST FIM
 
                 casaToken(TabelaSimbolos.PONTOVIRGULA);
@@ -533,7 +522,7 @@ namespace Compilador_L.Compilador
             Simbolos _auxCONSTc = new Simbolos("", Byte.MaxValue);
             Simbolos _auxIDc = new Simbolos("", Byte.MaxValue);
             TemporarioSimbolo _Ctemp = new TemporarioSimbolo(); // copia de _C para caso seja vetor copiar tamanho.
-            Boolean isVetor = false, vetorUtilizado = false;
+            Boolean isVetor = false, vetorUtilizado = false, entrouStep, _Celse ;
 
             //C->ID [ ABCOLCHETE E FECOLCHETE ] IGUAL E PONTOVIRGULA
             if (tokenE.token == TabelaSimbolos.ID)
@@ -751,7 +740,7 @@ namespace Compilador_L.Compilador
 
 
                 // STEP OPCIONAL
-                var entrouStep = false;
+                entrouStep = false;
                 if (tokenE.token == TabelaSimbolos.STEP)
                 {
                     casaToken(TabelaSimbolos.STEP);
@@ -822,6 +811,9 @@ namespace Compilador_L.Compilador
             else if (tokenE.token == TabelaSimbolos.IF)
             {
                 casaToken(TabelaSimbolos.IF);
+                a.add("");
+                a.add("; comparação if");
+
                 m.resetarTemporario();
                 E(_C);
 
