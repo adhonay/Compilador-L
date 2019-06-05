@@ -568,7 +568,7 @@ namespace Compilador_L.Compilador
                     E(_C);
                     _Ctemp = _C;
                     //inicio açao semantica 3
-                    if (_C.tipo != Simbolos.TIPO_INTEIRO)
+                    if (_C.tipo != Simbolos.TIPO_INTEIRO || _C.tamanho != Simbolos.ESCALAR )
                     {
                         Erro.ErroSemantico.Tipos(aLexico.linha);
                         //erro dentro do colchete so pode ter numero
@@ -981,7 +981,7 @@ namespace Compilador_L.Compilador
                     casaToken(TabelaSimbolos.FECOLCHETE);
                 }
                 //inicio ação semantica 13
-                if (vetorUtilizado != isVetor)
+                if (vetorUtilizado != isVetor && _auxIDc.tipo ==Simbolos.TIPO_INTEIRO)
                 {
                     Erro.ErroSemantico.Tipos(aLexico.linha);
                 }
