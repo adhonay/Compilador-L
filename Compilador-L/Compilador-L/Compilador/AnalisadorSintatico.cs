@@ -570,6 +570,7 @@ namespace Compilador_L.Compilador
                 //inicio ação semantica 4
                 if (_C.tipo != _auxIDc.tipo)
                 {
+                    //permito atribuir string a vetor de caracter
                     if (_C.tipo == Simbolos.TIPO_STRING && _auxIDc.tipo == Simbolos.TIPO_CARACTERE && _auxIDc.tamanho != Simbolos.ESCALAR)
                     {
                         if (_C.tamanho > _auxIDc.tamanho)
@@ -577,10 +578,11 @@ namespace Compilador_L.Compilador
                             Erro.ErroSemantico.Tamanho(aLexico.linha);
                         }
                     }
-                    else
+                    else if (!(_auxIDc.tipo== Simbolos.TIPO_CARACTERE && _C.tipo == Simbolos.TIPO_HEXADECIMAL && vetorUtilizado==true))
                     {
                         Erro.ErroSemantico.Tipos(aLexico.linha);
                     }
+                    
 
                     //ERRO 
                 }
@@ -903,7 +905,7 @@ namespace Compilador_L.Compilador
                 casaToken(TabelaSimbolos.PONTOVIRGULA);
             }
         }
-        // E -> ES [ ( IGUAL | MENOR | MAIOR | MENORIGUAL | MAIORIGUAL | DIFERENTE ) ES ]
+        // E -> ES [ ( IGUAL(aceita vetor, aceita string ) | MENOR | MAIOR | MENORIGUAL | MAIORIGUAL | DIFERENTE ) ES ]
         public void E(TemporarioSimbolo _E)
         {
             TemporarioSimbolo _ES1 = new TemporarioSimbolo();
@@ -923,7 +925,11 @@ namespace Compilador_L.Compilador
                 //inicio ação semantica
                 if (temp != TabelaSimbolos.IGUAL)
                 {
-                    if (_E.tipo != Simbolos.TIPO_INTEIRO || _ES1.tipo != Simbolos.TIPO_INTEIRO)
+                    //permito relacionais inteiro com inteiro e caracter com caracter mas n vetores
+                    if (_E.tipo != Simbolos.TIPO_INTEIRO && _E.tipo !=Simbolos.TIPO_CARACTERE && _E.tipo != Simbolos.TIPO_HEXADECIMAL ||
+                        _ES1.tipo != Simbolos.TIPO_INTEIRO && _ES1.tipo != Simbolos.TIPO_CARACTERE && _ES1.tipo != Simbolos.TIPO_HEXADECIMAL||
+                        _ES1.tipo != _E.tipo && !(_ES1.tipo == Simbolos.TIPO_HEXADECIMAL && _E.tipo == Simbolos.TIPO_CARACTERE || _ES1.tipo == Simbolos.TIPO_CARACTERE && _E.tipo == Simbolos.TIPO_HEXADECIMAL)
+                        || _E.tamanho != Simbolos.ESCALAR || _ES1.tamanho != Simbolos.ESCALAR) 
                     {
                         Erro.ErroSemantico.Tipos(aLexico.linha);
                     }
@@ -931,18 +937,19 @@ namespace Compilador_L.Compilador
                 else
                 {
 
-                    if (!((_E.tipo == Simbolos.TIPO_INTEIRO && _ES1.tipo == Simbolos.TIPO_INTEIRO)
+                    if (!((_E.tipo == Simbolos.TIPO_INTEIRO && _ES1.tipo == Simbolos.TIPO_INTEIRO && _E.tamanho == Simbolos.ESCALAR && _ES1.tamanho == Simbolos.ESCALAR)
                        || (_E.tipo == Simbolos.TIPO_STRING && _ES1.tipo == Simbolos.TIPO_STRING)
-                       || (_E.tipo == Simbolos.TIPO_INTEIRO && _ES1.tipo == Simbolos.TIPO_LOGICO)
-                       || (_E.tipo == Simbolos.TIPO_LOGICO && _ES1.tipo == Simbolos.TIPO_INTEIRO)))
+                       || (_E.tipo == Simbolos.TIPO_STRING && _ES1.tipo == Simbolos.TIPO_CARACTERE && _ES1.tamanho > 0)// n permite string ser comparadda com logico
+                       || (_E.tipo == Simbolos.TIPO_CARACTERE && _E.tamanho > 0 && _ES1.tipo == Simbolos.TIPO_STRING)
+                       || (_E.tipo == Simbolos.TIPO_CARACTERE && _ES1.tipo == Simbolos.TIPO_CARACTERE && !(_E.tamanho > 0 && _ES1.tamanho == 0 || _E.tamanho == 0 && _ES1.tamanho > 0) )
+                       || (_E.tipo == Simbolos.TIPO_HEXADECIMAL && _ES1.tipo == Simbolos.TIPO_CARACTERE && !(_E.tamanho > 0 && _ES1.tamanho == 0 || _E.tamanho == 0 && _ES1.tamanho > 0))
+                       || ( _E.tipo == Simbolos.TIPO_CARACTERE && _ES1.tipo == Simbolos.TIPO_HEXADECIMAL && !(_E.tamanho > 0 && _ES1.tamanho == 0 || _E.tamanho == 0 && _ES1.tamanho > 0))
+                       || (_E.tipo == Simbolos.TIPO_HEXADECIMAL && _ES1.tipo == Simbolos.TIPO_HEXADECIMAL && !(_E.tamanho > 0 && _ES1.tamanho == 0 || _E.tamanho == 0 && _ES1.tamanho > 0))
+                       || (_E.tipo == Simbolos.TIPO_INTEIRO && _E.tamanho == Simbolos.ESCALAR &&_ES1.tipo == Simbolos.TIPO_LOGICO) // permite int ser comparado com logico
+                       || (_E.tipo == Simbolos.TIPO_LOGICO && _ES1.tipo == Simbolos.TIPO_INTEIRO && _ES1.tamanho ==Simbolos.ESCALAR)))
                     {
                         Erro.ErroSemantico.Tipos(aLexico.linha);
                     }
-                }
-
-                if (_E.tamanho != _ES1.tamanho)
-                {
-                    Erro.ErroSemantico.Tipos(aLexico.linha);
                 }
 
                 _E.tipo = Simbolos.TIPO_LOGICO;
@@ -970,7 +977,9 @@ namespace Compilador_L.Compilador
             }
             T(_ES);
             //inicio ação semantica
-            if (opcao == true && (_ES.tipo != Simbolos.TIPO_INTEIRO))
+            //não permito um vetor receber um sinal negativo na frente 
+            if (opcao == true && (_ES.tipo != Simbolos.TIPO_INTEIRO || _ES.tamanho != Simbolos.ESCALAR))
+                
             {
                 Erro.ErroSemantico.Tipos(aLexico.linha);
             }
@@ -1012,8 +1021,12 @@ namespace Compilador_L.Compilador
                 }
                 else
                 {
-                    if (_ES.tipo != Simbolos.TIPO_INTEIRO || _T1.tipo != Simbolos.TIPO_INTEIRO ||
-                       _T1.tamanho > 0 || _ES.tamanho > 0)
+                    // permito somar int com int ou caracter com caracter mas não vetores
+                    if (_ES.tipo != Simbolos.TIPO_INTEIRO && _ES.tipo != Simbolos.TIPO_CARACTERE && _ES.tipo!= Simbolos.TIPO_HEXADECIMAL ||
+                        _T1.tipo != Simbolos.TIPO_INTEIRO && _T1.tipo != Simbolos.TIPO_CARACTERE && _T1.tipo != Simbolos.TIPO_HEXADECIMAL ||
+                        _T1.tipo != _ES.tipo && !(_T1.tipo == Simbolos.TIPO_HEXADECIMAL && _ES.tipo == Simbolos.TIPO_CARACTERE || _T1.tipo == Simbolos.TIPO_CARACTERE && _ES.tipo == Simbolos.TIPO_HEXADECIMAL)
+                        || _T1.tamanho > 0 || _ES.tamanho > 0) 
+
                     {
                         Erro.ErroSemantico.Tipos(aLexico.linha);
                     }
@@ -1055,13 +1068,18 @@ namespace Compilador_L.Compilador
                 F(_F1);
 
                 //inicio ação semantica 10
-                if ((mult == true || div == true || mod == true) && (_T.tipo != Simbolos.TIPO_INTEIRO ||
-                    _F1.tipo != Simbolos.TIPO_INTEIRO || _T.tamanho > 0 || _F1.tamanho > 0))
+                //permito soma de int com int ou caracter com caracter mas n de vetores
+                if ((mult == true || div == true || mod == true) &&
+                       (_T.tipo != Simbolos.TIPO_INTEIRO && _T.tipo !=Simbolos.TIPO_CARACTERE && _T.tipo != Simbolos.TIPO_HEXADECIMAL   ||
+                         _F1.tipo != Simbolos.TIPO_INTEIRO && _F1.tipo != Simbolos.TIPO_CARACTERE && _F1.tipo != Simbolos.TIPO_HEXADECIMAL  ||
+                         _F1.tipo != _T.tipo && !(_F1.tipo == Simbolos.TIPO_HEXADECIMAL && _T.tipo == Simbolos.TIPO_CARACTERE || _F1.tipo == Simbolos.TIPO_CARACTERE && _T.tipo == Simbolos.TIPO_HEXADECIMAL)
+                         || _T.tamanho > 0 || _F1.tamanho > 0))
+                  
                 {
                     Erro.ErroSemantico.Tipos(aLexico.linha);
 
                 }
-                else if (and == true && (_T.tipo != Simbolos.TIPO_LOGICO || _F1.tipo != Simbolos.TIPO_LOGICO || _T.tamanho > 0 || _F1.tamanho > 0))
+                else if (and == true && (_T.tipo != Simbolos.TIPO_LOGICO || _F1.tipo != Simbolos.TIPO_LOGICO ))
                 {
                     Erro.ErroSemantico.Tipos(aLexico.linha);
                 }
