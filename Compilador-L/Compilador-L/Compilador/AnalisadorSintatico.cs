@@ -554,7 +554,7 @@ namespace Compilador_L.Compilador
                 if (tokenE.token == TabelaSimbolos.ABCOLCHETE)
                 {
                     casaToken(TabelaSimbolos.ABCOLCHETE);
-                    m.resetarTemporario();
+                   // m.resetarTemporario();
                     E(_C);
                     _Ctemp = _C;
                     //inicio açao semantica 3
@@ -575,7 +575,7 @@ namespace Compilador_L.Compilador
                     casaToken(TabelaSimbolos.FECOLCHETE);
                 }
                 casaToken(TabelaSimbolos.IGUAL);
-                m.resetarTemporario();
+                //m.resetarTemporario();
                 E(_C);
                 //inicio ação semantica 4
                 if (_C.tipo != _auxIDc.tipo)
@@ -716,7 +716,7 @@ namespace Compilador_L.Compilador
                 }
                 //fim ação semantica 5
                 casaToken(TabelaSimbolos.IGUAL);
-                m.resetarTemporario();
+                //m.resetarTemporario();
                 E(_C);
                 _Ctemp = _C;
                 //inicio ação semantica 6
@@ -728,7 +728,7 @@ namespace Compilador_L.Compilador
                 //fim ação semantica 6
 
                 casaToken(TabelaSimbolos.TO);
-                m.resetarTemporario();
+               // m.resetarTemporario();
                 E(_C);
 
                 //inicio ação semantica 6
@@ -801,6 +801,7 @@ namespace Compilador_L.Compilador
                 {
                     C();
                 }
+
                 a.add("");
                 a.add("pop AX                   ;remove valor de comparação do for da pilha");
                 a.add("add DS:[" + _auxIDc.endereco + "], AX       ;soma valor atual da repetição com anterior do id");
@@ -816,7 +817,7 @@ namespace Compilador_L.Compilador
                 a.add("");
                 a.add(";comparação if");
 
-                m.resetarTemporario();
+               // m.resetarTemporario();
                 E(_C);
 
                 //inicio ação semantica 8
@@ -1193,7 +1194,7 @@ namespace Compilador_L.Compilador
                 }
 
                 casaToken(TabelaSimbolos.ABPARENTESES);
-                m.resetarTemporario();
+                //m.resetarTemporario();
                 E(_C);
 
                 if (_C.tipo == Simbolos.TIPO_LOGICO)
@@ -1285,7 +1286,7 @@ namespace Compilador_L.Compilador
                 while (tokenE.token == TabelaSimbolos.VIRGULA)
                 {
                     casaToken(TabelaSimbolos.VIRGULA);
-                    m.resetarTemporario();
+                   // m.resetarTemporario();
                     E(_C);
 
                     if (_C.tipo == Simbolos.TIPO_LOGICO)
@@ -1433,8 +1434,108 @@ namespace Compilador_L.Compilador
                     }
                 }
 
+            String labelEnd = r.novoRotulo();
+            String labelTrue = r.novoRotulo();
+            String labelFalse = r.novoRotulo();
+
+            if (_E.tipo == Simbolos.TIPO_STRING)
+            {
+                a.add("");
+                a.add("; comparação string");
+                String labelS = r.novoRotulo();
+                a.add("mov SI, DS:[" + _E.endereco + "]; SI contem string a");
+                a.add("mov DI, DS:[" + _ES1.endereco + "]; SI contem string b");
+
+                a.add(labelS + ":");
+                a.add("mov AL, DS:[SI]");
+                a.add("mov BL, DS:[DI]");
+
+                a.add("cmp AX, BX");
+                a.add("jne " + labelEnd);
+
+                a.add("cmp AX, 36");
+                a.add("je " + labelTrue);
+
+                a.add("jmp " + labelS);
+
+            } else if (_E.tamanho != Simbolos.ESCALAR) //vet
+            {
+                a.add("");
+                a.add(";comparação vetor");
+                a.add("mov SI, DS:[" + _E.endereco + "]; SI contem vet a");
+                a.add("mov DI, DS:[" + _ES1.endereco + "]; SI contem vet b");
+                a.add("mov AH, 0");
+                a.add("mov BH, 0");
+                a.add(labelTrue + ":");
+                a.add("mov AL, DS:[SI]");
+                a.add("mov BL, DS:[DI]");
+                a.add("add SI, 1");
+                a.add("add DI, 1");
+                a.add("neg AL, 1");
+                a.add("add AL, BL");
+                a.add("cmp AX, 0");
+                a.add("jne " + labelFalse);
+                a.add("cmp BX, 36");
+                a.add("jne " + labelTrue);
+                a.add("mov AL, "+(temp == TabelaSimbolos.IGUAL ? 1 : 0));
+                a.add("jmp " + labelEnd);
+                a.add(labelFalse + ":");
+                a.add("mov AL, " + (temp == TabelaSimbolos.IGUAL ? 0 : 1));
+
+            }
+            else
+            {//escalar
+
+                if (_E.tipo == Simbolos.TIPO_CARACTERE)
+                {
+                    a.add("");
+                    a.add(";comparação char");
+                    a.add("mov AH, 0");
+                    a.add("mov AL, DS:[" + _E.endereco + "];");
+
+                    a.add("mov BH, 0");
+                    a.add("mov BL, DS:[" + _ES1.endereco + "];");
+                }
+                else
+                {
+                    a.add("");
+                    a.add(";comparação inteiro");
+                    a.add("mov AX, DS:[" + _E.endereco + "];");
+                    a.add("mov BX, DS:[" + _ES1.endereco + "];");
+                }
+
+                a.add("cmp AX, BX");
+
+                if (temp == TabelaSimbolos.IGUAL)
+                    a.add("je " + labelTrue);
+                else if (temp == TabelaSimbolos.DIFERENTE)
+                    a.add("jne " + labelTrue);
+                else if (temp == TabelaSimbolos.MENOR)
+                    a.add("jl " + labelTrue);
+                else if (temp == TabelaSimbolos.MENORIGUAL)
+                    a.add("jle " + labelTrue);
+                else if (temp == TabelaSimbolos.MAIORIGUAL)
+                    a.add("jg " + labelTrue);
+                else
+                    a.add("jge " + labelTrue);
+
+
+                a.add(labelFalse + ":");
+                a.add("mov AL, 0");
+                a.add("jmp " + labelEnd);
+
+                a.add(labelTrue + ":");
+                a.add("mov AL, 255");
+
+                a.add(labelEnd + ":");
+                _E.endereco = m.alocarTemporarioLogico();
+                a.add("mov DS:[" + _E.endereco + "], AL");
+
+
+            }
                 _E.tipo = Simbolos.TIPO_LOGICO;
             }
+
         }
         //ES -> [ + | - ] T { ( + | - | or ) T }*
         public void ES(TemporarioSimbolo _ES)
@@ -1464,7 +1565,17 @@ namespace Compilador_L.Compilador
             {
                 Erro.ErroSemantico.Tipos(aLexico.linha);
             }
+
             //fim ação semantica
+
+            if (opMenos)
+            {
+                a.add("mov AX, DS:[" + _ES.endereco + "]");
+                _ES.endereco = m.alocarTemporarioInteiro();
+                a.add("neg AX");
+                a.add("mov DS:[" + _ES.endereco + "], AX");
+            }
+
             while (tokenE.token == TabelaSimbolos.MAIS || tokenE.token == TabelaSimbolos.MENOS || tokenE.token == TabelaSimbolos.OR)
             {
                 //inicio ação semantica 
@@ -1514,8 +1625,45 @@ namespace Compilador_L.Compilador
                 }
                 //fim ação semantica
 
-            }
 
+                if (opLogico)// OR
+                {        
+                    a.add("mov AL, DS:[" + _ES.endereco + "]");
+                    a.add("mov BL, DS:[" + _T1.endereco + "]");
+                    a.add("or AL, BL");
+                    _ES.endereco = m.alocarTemporarioLogico();
+                    a.add("mov DS:[" + _ES.endereco + "], AL");
+                }else if (opMais)
+                {
+                    a.add("mov AL, DS:[" + _ES.endereco + "]");
+                    a.add("mov BL, DS:[" + _T1.endereco + "]");
+                    a.add("add AL, BL");
+                    if (_ES.tipo == Simbolos.TIPO_INTEIRO)
+                    {
+                        _ES.endereco = m.alocarTemporarioInteiro();
+                    }
+                    else
+                    {
+                        _ES.endereco = m.alocarTemporarioCaractere();
+                    }
+                    a.add("mov DS:[" + _ES.endereco + "], AL");
+                }
+                else 
+                {
+                    a.add("mov AL, DS:[" + _ES.endereco + "]");
+                    a.add("mov BL, DS:[" + _T1.endereco + "]");
+                    a.add("sub AL, BL");
+                    if (_ES.tipo == Simbolos.TIPO_INTEIRO)
+                    {
+                        _ES.endereco = m.alocarTemporarioInteiro();
+                    }
+                    else
+                    {
+                        _ES.endereco = m.alocarTemporarioCaractere();
+                    }
+                    a.add("mov DS:[" + _ES.endereco + "], AL");
+                }
+            }
         }
 
         // T-> F { ( * | / | % | and ) F }
@@ -1565,8 +1713,94 @@ namespace Compilador_L.Compilador
                     Erro.ErroSemantico.Tipos(aLexico.linha);
                 }
                 //fim ação semantica 10
-                and = false; mult = false; div = false; mod = false;
 
+
+                //inicio açao
+                if (and == true)
+                {
+                    a.add("mov AL, DS:[" + _T.endereco + "]");
+                    a.add("mov BL, DS:[" + _F1.endereco + "]");
+                    a.add("and AL, BL");
+                    _T.endereco = m.alocarTemporarioLogico();
+                    a.add("mov DS:[" + _T.endereco + "], AL");
+
+                }
+                else if (mult == true)
+                {
+                    if (_T.tipo == Simbolos.TIPO_HEXADECIMAL && _F1.tipo == Simbolos.TIPO_HEXADECIMAL || _T.tipo == Simbolos.TIPO_CARACTERE && _F1.tipo == Simbolos.TIPO_CARACTERE)
+                    {
+                        a.add("mov AL, DS:[" + _T.endereco + "]");
+                        a.add("mov BL, DS:[" + _F1.endereco + "]");
+                        a.add("mul BL");
+                        _T.endereco = m.alocarTemporarioCaractere();
+                        a.add("mov DS:[" + _T.endereco + "], AL");
+                    }
+                    else
+                    {
+                        if (_T.tipo == Simbolos.TIPO_HEXADECIMAL || _T.tipo == Simbolos.TIPO_CARACTERE)
+                        {
+                            a.add("mov AL, DS:[" + _T.endereco + "]");
+                            a.add("cbw");
+                            a.add("mov CX, AX");
+                        }
+                        else
+                        {
+                            a.add("mov CX, DS:[" + _T.endereco + "]");
+                        }
+
+                        if (_F1.tipo == Simbolos.TIPO_HEXADECIMAL || _F1.tipo == Simbolos.TIPO_CARACTERE)
+                        {
+                            a.add("mov AL, DS:[" + _F1.endereco + "]");
+                            a.add("cbw");
+                            a.add("mov DX, AX");
+                        }
+                        else
+                        {
+                            a.add("mov DX, DS:[" + _F1.endereco + "]");
+                        }
+
+                        a.add("mov AX, CX");
+                        a.add("imul DX");
+                        _T.endereco = m.alocarTemporarioInteiro();
+                        a.add("mov DS:[" + _T.endereco + "], AX");
+
+
+                    }
+                }
+                else if (div == true || mod == true)
+                {
+                    if (_T.tipo == Simbolos.TIPO_CARACTERE || _T.tipo == Simbolos.TIPO_HEXADECIMAL)
+                    {
+                        a.add("mov AL, DS:[" + _T.endereco+ "]");
+                        a.add("cbw");
+                        a.add("mov CX, AX");
+                    }
+                    else
+                    {
+                        a.add("mov CX, DS:[" + _T.endereco + "]");
+                    }
+
+                    if (_F1.tipo == Simbolos.TIPO_CARACTERE || _F1.tipo == Simbolos.TIPO_HEXADECIMAL)
+                    {
+                        a.add("mov AL, DS:[" + _F1.endereco + "]");
+                        a.add("cbw");
+                        a.add("mov BX, AX");
+                    }
+                    else
+                    {
+                        a.add("mov BX, DS:[" + _F1.endereco + "]");
+                    }
+
+                    a.add("mov AX, CX");
+                    a.add("cwd");
+                    a.add("idiv BX");
+
+                    _T.endereco = m.alocarTemporarioInteiro();
+                    a.add("mov DS:[" + _T.endereco + "], AX");
+
+                }
+                   //fim ação
+                    and = false; mult = false; div = false; mod = false;
             }
         }
         // F -> ABPARENTESES E FEPARENTESES |CONSTANTE| ID[ ABCOLCHETE E FECOLHETE ] | NOT F
@@ -1601,6 +1835,42 @@ namespace Compilador_L.Compilador
                     _F.tamanho = _auxCONSTf.lexema.Length;
                 }
 
+                //inicio açao 
+                if (_auxCONSTf.tipo == Simbolos.TIPO_STRING)
+                {
+                    a.add("dseg SEGMENT PUBLIC");
+                    var removeAspas = _auxCONSTf.lexema.TrimStart('"').TrimEnd('"');
+                    a.add("byte \"" + removeAspas + "\" ;var. string");
+                    a.add("dseg ENDS");
+                    _F.endereco = m.alocarString(_auxCONSTf.lexema.Length);
+                }
+               
+               else if (_auxCONSTf.tipo == Simbolos.TIPO_CARACTERE || _auxCONSTf.tipo == Simbolos.TIPO_HEXADECIMAL)
+               {
+                    //Converter o  inteiro de um caracter em seu respectivo hexadecimal
+                    if (_auxCONSTf.tipo == Simbolos.TIPO_CARACTERE)
+                    {
+                        _F.endereco = m.alocarTemporarioCaractere();
+                        char caractere = _auxCONSTf.lexema[1];
+                        a.add("mov AX, " + (int)caractere);
+                        a.add("mov DS:[" + _F.endereco + "], AX");
+                    }
+                    else
+                    {
+                        _F.endereco = m.alocarTemporarioCaractere();
+                        var hex = Convert.ToInt64(_auxCONSTf.lexema, 16);
+                        a.add("mov AX, " + hex);
+                        a.add("mov DS:[" + _F.endereco + "], AX");
+                    }
+               }
+                else 
+                {
+                    _F.endereco = m.alocarTemporarioInteiro();
+                    a.add("mov AX, " + int.Parse(_auxCONSTf.lexema));
+                    a.add("mov DS:[" + _F.endereco + "], AX");
+
+                }
+                //fim ação
 
             }// F-> ID[ "[" E "]" ] 
             else if (tokenE.token == TabelaSimbolos.ID)
@@ -1657,9 +1927,41 @@ namespace Compilador_L.Compilador
                     _F.tipo = _auxIDf.tipo;
                     _F.tamanho = _auxIDf.tamanho;                 
                 }
-                isVetor = false; isVetorUtilizado = false;
 
-                //fim ação semantica 7
+                if(isVetor = true && isVetorUtilizado == true)
+                {
+                    a.add("");
+                    a.add(";vetor vetor indexado exp");
+                    a.add("mov AX, DS:[" + _F.endereco + "]          ;carrega valor indexado do vetor");
+                    a.add("mov BX, DS:[" + _auxIDf.endereco + "]       ;carrega end inicio vet identificador");
+                    if (_auxIDf.tipo == Simbolos.TIPO_INTEIRO)
+                    {
+                        _F.endereco = m.alocarTemporarioInteiro();
+                        a.add("imul 2                   ;multiplica por 2 valor indexado");
+                    }
+                    else
+                    {
+                        _F.endereco = m.alocarTemporarioCaractere();
+                    }
+                    a.add("add AX, BX               ;soma os dois valores, ax tem o end pos vet para salvar");
+                    a.add("mov BX, DS:[AX]          ;carrega valor do vet indexado");
+                    a.add("mov DS:[" + _F.endereco + "] , BX          ;F recebe valor da posicao acessada");
+                }
+                else if(isVetor == true && isVetorUtilizado == false)
+                {
+                    a.add("");
+                    a.add(";vetor inteiro de char");
+                    _F.endereco = m.alocarTemporarioInteiro();
+                    a.add("mov AX, DS:[" + _auxIDf.endereco + "]       ;carrega end inicio vet identificador");
+                    a.add("mov DS:[" + _F.endereco + "] , AX          ;F recebe valor da posicao acessada");
+                }
+                else
+                {//escalar
+                    _F.endereco = _auxIDf.endereco;
+                }
+
+                isVetor = false; isVetorUtilizado = false;
+                //fim ação semantica 7           
 
             }// F-> NOT F
             else
@@ -1677,6 +1979,10 @@ namespace Compilador_L.Compilador
                     _F.tipo = Simbolos.TIPO_LOGICO;
                 }
                 //fim ação semantica 8
+                _F.endereco = m.alocarTemporarioLogico();
+                a.add("mov AL, DS:[" + _F1.endereco + "]");
+                a.add("not AL");
+                a.add("mov DS:[" + _F.endereco + "], AL");
             }
 
         }
