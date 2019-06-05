@@ -113,7 +113,7 @@ public class Memoria
     public int allocateTemporaryBuffer()
     {
         int address = temporario;
-        temporario += 259;
+        temporario += 259;// pois quando e lido do teclado os caracteres são armazenados a partir da 3 posição.
         return address;
     }
 }

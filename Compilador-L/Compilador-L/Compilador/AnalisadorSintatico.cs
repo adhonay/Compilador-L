@@ -66,7 +66,14 @@ namespace Compilador_L.Compilador
             // açaõ semantica GC
             a.add("");
             a.add("dseg ENDS                ;fim seg. dados");
-            a.print("c:/8086/arquivo.asm");
+            a.add("");
+            a.add("cseg SEGMENT PUBLIC 	 ;início seg. Código");
+            a.add("ASSUME CS:cseg, DS:dseg");
+            a.add("_strt:                   ;início do programa");
+            a.add("mov AX, dseg");
+            a.add("mov DS, AX");
+
+            
 
             do
             {
@@ -81,8 +88,14 @@ namespace Compilador_L.Compilador
 				//erro ocorre pois o programa termina sua leitura nos comandos qualquer simbolo após é inadequado.
 				Erro.ErroSintatico.Lexema(aLexico.linha, tokenE.lexema);
 			}
+            a.add("mov AH, 76               ;mov ah,4Ch ");
+            a.add("int 33                   ;int 21h ");
+            a.add("cseg ENDS                ;fim seg. código");
+            a.add("END _strt                ;fim programa");
 
-		}
+            a.print("c:/8086/arquivo.asm");
+
+        }
 		// D -> ( VAR {  (INT|CHAR) ID [ATR] {VIRGULA ID [ATR]}*  }+    |     const id= [+|-] constante )
 		public void D()
 		{
@@ -272,7 +285,7 @@ namespace Compilador_L.Compilador
                                 else
                                 {// se for vetor.
                                     tabela.inserirEndereco(auxID.lexema, m.alocarVetorInterio(_D.tamanho));
-                                    a.add("byte " + _D.tamanho + " DUP(?)           ;declaração var int vetor");
+                                    a.add("sword " + _D.tamanho + " DUP(?)           ;declaração var int vetor");
                                 }
 
                             }
@@ -413,12 +426,12 @@ namespace Compilador_L.Compilador
                     a.add("byte " + hex + "                 ;declaração const char hex");
 
                 }
-                else if (auxCONST.tipo == Simbolos.TIPO_STRING)
-                {
-                    int tamanho = auxCONST.lexema.Length;
-                    tabela.inserirEndereco(auxID.lexema, m.alocarString(tamanho));
-                    a.add("byte " + tamanho + "                  ;declaração const string");
-                }
+                //else if (auxCONST.tipo == Simbolos.TIPO_STRING)
+                //{
+                //    int tamanho = auxCONST.lexema.Length;
+                //    tabela.inserirEndereco(auxID.lexema, m.alocarString(tamanho));
+                //    a.add("byte " + tamanho + "                  ;declaração const string");
+                //}
 
                 //GERAÇÃO DE CODIGO DELCARAÇÃO CONST FIM
 
@@ -519,13 +532,17 @@ namespace Compilador_L.Compilador
             TemporarioSimbolo _C = new TemporarioSimbolo(); //a ser preenchido por E();
             Simbolos _auxCONSTc = new Simbolos("", Byte.MaxValue);
             Simbolos _auxIDc = new Simbolos("", Byte.MaxValue);
+            TemporarioSimbolo _Ctemp = new TemporarioSimbolo(); // copia de _C para caso seja vetor copiar tamanho.
             Boolean isVetor = false, vetorUtilizado = false;
 
             //C->ID [ ABCOLCHETE E FECOLCHETE ] IGUAL E PONTOVIRGULA
             if (tokenE.token == TabelaSimbolos.ID)
             {
+                
                 _auxIDc = tokenE;
                 casaToken(tokenE.token);
+                
+
                 //inicio ação semantica 0
                 if (_auxIDc.classe == Simbolos.SEM_CLASSE)
                 {
@@ -547,7 +564,9 @@ namespace Compilador_L.Compilador
                 if (tokenE.token == TabelaSimbolos.ABCOLCHETE)
                 {
                     casaToken(TabelaSimbolos.ABCOLCHETE);
+                    m.resetarTemporario();
                     E(_C);
+                    _Ctemp = _C;
                     //inicio açao semantica 3
                     if (_C.tipo != Simbolos.TIPO_INTEIRO)
                     {
@@ -566,6 +585,7 @@ namespace Compilador_L.Compilador
                     casaToken(TabelaSimbolos.FECOLCHETE);
                 }
                 casaToken(TabelaSimbolos.IGUAL);
+                m.resetarTemporario();
                 E(_C);
                 //inicio ação semantica 4
                 if (_C.tipo != _auxIDc.tipo)
@@ -606,6 +626,76 @@ namespace Compilador_L.Compilador
                 {
                     Erro.ErroSemantico.Tipos(aLexico.linha);
                 }
+
+                //GERAÇÃO DE CODIGO ATRIBUIÇÃO ID INICIO
+
+                if (_auxIDc.tipo == Simbolos.TIPO_INTEIRO)
+                {
+                    if (_auxIDc.tamanho != Simbolos.ESCALAR && vetorUtilizado == true)//integer id[x]
+                    {
+                        a.add("");
+                        a.add(";atribuição a vetor de inteiro");
+                        a.add("mov AX, DS:[" + _Ctemp.endereco + "]          ;carrega valor indexado do vetor");
+                        a.add("mov BX, DS:[" + _auxIDc.endereco + "]       ;carrega end inicio vet identificador");
+                        a.add("imul 2                   ;multiplica por 2 valor indexado");
+                        a.add("add AX, BX               ;soma os dois valores, ax tem o end pos vet para salvar");
+                        a.add("mov BX, DS:[" + _C.endereco + "]          ;carrega valor do end exp de igualdade");
+                        a.add("mov DS:[AX], BX          ;armazena na pos vet o valor da exp recebida");
+                    }
+                    else if (_auxIDc.tamanho == Simbolos.ESCALAR && vetorUtilizado == false)//integer id
+                    {
+                        a.add("");
+                        a.add(";atribuição a inteiro escalar");
+                        a.add("mov AX, DS:[" + _C.endereco + "]          ;carrega valor do end exp de igualdade");
+                        a.add("mov DS:[" + _auxIDc.endereco + "], AX       ;armazena no end id o ax");
+                    }
+
+                }
+                else if (_auxIDc.tipo == Simbolos.TIPO_CARACTERE) {
+
+                    if (_auxIDc.tamanho != Simbolos.ESCALAR && vetorUtilizado == true)//char id[x]
+                    {
+                        a.add("");
+                        a.add(";atribuição a pos vetor de caractere");
+                        a.add("mov AX, DS:[" + _Ctemp.endereco + "]          ;carrega valor indexado do vetor");
+                        a.add("mov BX, DS:[" + _auxIDc.endereco + "]       ;carrega end inicio vet identificador");
+                        a.add("add AX, BX               ;soma os dois valores, ax tem o end pos vet para salvar");
+                        a.add("mov BX, DS:[" + _C.endereco + "]          ;carrega valor do end exp de igualdade");
+                        a.add("mov DS:[AX], BX          ;armazena na pos vet o valor da exp recebida");
+                    }
+                    else if (_auxIDc.tamanho != Simbolos.ESCALAR && vetorUtilizado == false)// char id(vet)
+                    {
+                        a.add("");
+                        a.add(";atribuição de string/vet char a vet caractere");
+                        String labelInicio = r.novoRotulo();
+                        String labelFim = r.novoRotulo();
+                        a.add("mov SI, DS:[" + _C.endereco + "]          ;SI contem string ou vetor");
+                        a.add("mov DI, " + _auxIDc.endereco + "            ;DI contem nova string ou vet");
+                        a.add("mov AX, DS:[SI]");
+
+                        a.add(labelInicio + ":");
+                        a.add("cmp AX, 36");
+                        a.add("je " + labelFim);
+                        a.add("mov DS:[DI], AX");
+                        a.add("add SI, 1");
+                        a.add("add DI, 1");
+                        a.add("mov AX, DS:[SI]");
+                        a.add("jmp " + labelInicio);
+
+                        a.add(labelFim + ":");
+                        a.add("mov AX, DS:[SI]");
+                    }
+                    else if (_auxIDc.tamanho == Simbolos.ESCALAR && vetorUtilizado == false)//char id
+                    {
+                        a.add("");
+                        a.add(";atribuição a caractere escalar");
+                        a.add("mov AL, DS:[" + _C.endereco + "]          ;carrega valor do end exp de igualdade");
+                        a.add("cbw                      ;extender char. ah = 0");
+                        a.add("mov DS:[" + _auxIDc.endereco + "], AX       ;armazena no end id o ax");
+                    }
+
+                }
+                //GERAÇÃO DE CODIGO ATRIBUIÇÃO ID FIM
                 //fim ação semantica 4
                 casaToken(TabelaSimbolos.PONTOVIRGULA);
             }
@@ -636,8 +726,9 @@ namespace Compilador_L.Compilador
                 }
                 //fim ação semantica 5
                 casaToken(TabelaSimbolos.IGUAL);
+                m.resetarTemporario();
                 E(_C);
-
+                _Ctemp = _C;
                 //inicio ação semantica 6
                 if (_C.tipo != Simbolos.TIPO_INTEIRO || _C.tamanho > 0)
                 {
@@ -647,6 +738,7 @@ namespace Compilador_L.Compilador
                 //fim ação semantica 6
 
                 casaToken(TabelaSimbolos.TO);
+                m.resetarTemporario();
                 E(_C);
 
                 //inicio ação semantica 6
@@ -659,6 +751,7 @@ namespace Compilador_L.Compilador
 
 
                 // STEP OPCIONAL
+                var entrouStep = false;
                 if (tokenE.token == TabelaSimbolos.STEP)
                 {
                     casaToken(TabelaSimbolos.STEP);
@@ -671,8 +764,36 @@ namespace Compilador_L.Compilador
                         Erro.ErroSemantico.Tipos(aLexico.linha);
                         //erro a constante no step tem q ser int
                     }
+                    entrouStep = true;
                     //fim ação semantica 7
                 }
+
+                // GERAÇÃO DE CODIGO COMANDO FOR INICIO
+
+                a.add("");
+                a.add(";Repetição For");
+
+                a.add("mov AX, DS:[" + _Ctemp.endereco + "]          ;copia valor do E dps da igualdade ");
+                a.add("mov DS:[" + _auxIDc.endereco + "], AX       ;armazena o valor no id corespondente");
+
+                String labelInicio = r.novoRotulo();
+                String labelFim = r.novoRotulo();
+
+                
+                a.add(labelInicio + ":");
+                a.add("mov AX, DS:[" + _C.endereco + "]          ;copia valor do E dps do 'TO' ");
+                a.add("cmp DS:[" + _auxIDc.endereco + "], AX       ;compara E1 com E2");
+                a.add("jg " + labelFim);       
+                a.add("mov AX, 1                ;inicializa ");
+
+                if (entrouStep)
+                {
+                    a.add("mov BX, " + int.Parse(_auxCONSTc.lexema) + "                ;entrou no step, copia valor do pulo");
+                    a.add("imul BX                  ;multiplica pulo por ax e salva em ax");
+                }
+
+                a.add("push AX                  ;adiciona valor de comparação do for na pilha");
+                // GERAÇÃO DE CODIGO COMANDO FOR FIM
 
                 casaToken(TabelaSimbolos.DO);
                 if (tokenE.token == TabelaSimbolos.ABCHAVE)
@@ -690,7 +811,12 @@ namespace Compilador_L.Compilador
                 {
                     C();
                 }
-
+                a.add("");
+                a.add("pop AX                   ;remove valor de comparação do for da pilha");
+                a.add("add DS:[" + _auxIDc.endereco + "], AX       ;soma valor atual da repetição com anterior do id");
+                a.add("jmp " + labelInicio);
+                a.add(labelFim + ":");
+                a.add(";Fim repetição For");
             }
             //C -> IF E THEN (ABCHAVE {C}* FECHACHEVE [ELSE ( ABCHAVE {C}* FECHAVE | C )]  |  C[ELSE ( ABCHAVE {C}* FECHAVE | C) ]  )
             else if (tokenE.token == TabelaSimbolos.IF)
