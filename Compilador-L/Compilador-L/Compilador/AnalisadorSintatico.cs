@@ -822,6 +822,7 @@ namespace Compilador_L.Compilador
             else if (tokenE.token == TabelaSimbolos.IF)
             {
                 casaToken(TabelaSimbolos.IF);
+                m.resetarTemporario();
                 E(_C);
 
                 //inicio ação semantica 8
