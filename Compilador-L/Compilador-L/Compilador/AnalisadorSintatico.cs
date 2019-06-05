@@ -521,8 +521,9 @@ namespace Compilador_L.Compilador
             TemporarioSimbolo _C = new TemporarioSimbolo(); //a ser preenchido por E();
             Simbolos _auxCONSTc = new Simbolos("", Byte.MaxValue);
             Simbolos _auxIDc = new Simbolos("", Byte.MaxValue);
+            Simbolos _auxIDcTemp = new Simbolos("", Byte.MaxValue);
             TemporarioSimbolo _Ctemp = new TemporarioSimbolo(); // copia de _C para caso seja vetor copiar tamanho.
-            Boolean isVetor = false, vetorUtilizado = false, entrouStep, _Celse ;
+            Boolean isVetor = false, vetorUtilizado = false, entrouStep, _Celse, _CquebraLinha ;
 
             //C->ID [ ABCOLCHETE E FECOLCHETE ] IGUAL E PONTOVIRGULA
             if (tokenE.token == TabelaSimbolos.ID)
@@ -782,7 +783,7 @@ namespace Compilador_L.Compilador
                 }
 
                 a.add("push AX                  ;adiciona valor de comparação do for na pilha");
-                // GERAÇÃO DE CODIGO COMANDO FOR FIM
+              
 
                 casaToken(TabelaSimbolos.DO);
                 if (tokenE.token == TabelaSimbolos.ABCHAVE)
@@ -806,13 +807,14 @@ namespace Compilador_L.Compilador
                 a.add("jmp " + labelInicio);
                 a.add(labelFim + ":");
                 a.add(";Fim repetição For");
+                // GERAÇÃO DE CODIGO COMANDO FOR FIM
             }
             //C -> IF E THEN (ABCHAVE {C}* FECHACHEVE [ELSE ( ABCHAVE {C}* FECHAVE | C )]  |  C[ELSE ( ABCHAVE {C}* FECHAVE | C) ]  )
             else if (tokenE.token == TabelaSimbolos.IF)
             {
                 casaToken(TabelaSimbolos.IF);
                 a.add("");
-                a.add("; comparação if");
+                a.add(";comparação if");
 
                 m.resetarTemporario();
                 E(_C);
@@ -825,12 +827,24 @@ namespace Compilador_L.Compilador
                 }
                 //fim ação semantica 8
 
+                _Celse = false;
+
+                String labelFalso = r.novoRotulo();
+                String labelFim = r.novoRotulo();
+
+                
+                a.add("mov AL, DS:[" + _C.endereco + "]          ;carrega em al resultado da exp");
+                a.add("cmp AL, 255              ;compara com verdadeiro");
+                a.add("jne " + labelFalso);
+                
+
                 casaToken(TabelaSimbolos.THEN);
+
                 //C -> ABCHAVE {C}* FECHACHEVE [ELSE ( ABCHAVE {C}* FECHAVE | C )] 
                 if (tokenE.token == TabelaSimbolos.ABCHAVE)
                 {
                     casaToken(TabelaSimbolos.ABCHAVE);
-                    //LISTA DE 0 OU VARIOS COMANDOS. CASO SEJA OBRIGATORIO UM COMANDO TROCAR POR DO WHILE
+                    //LISTA DE 0 OU VARIOS COMANDOS.
                     while (tokenE.token == TabelaSimbolos.ID || tokenE.token == TabelaSimbolos.FOR ||
                        tokenE.token == TabelaSimbolos.IF || tokenE.token == TabelaSimbolos.WRITE ||
                        tokenE.token == TabelaSimbolos.WRITELN || tokenE.token == TabelaSimbolos.READLN ||
@@ -841,7 +855,11 @@ namespace Compilador_L.Compilador
                     casaToken(TabelaSimbolos.FECHAVE);
                     if (tokenE.token == TabelaSimbolos.ELSE)
                     {
+                        
                         casaToken(TabelaSimbolos.ELSE);
+                        _Celse = true;
+                        a.add(labelFalso + ":");
+
                         if (tokenE.token == TabelaSimbolos.ABCHAVE)
                         {
                             casaToken(TabelaSimbolos.ABCHAVE);
@@ -868,6 +886,11 @@ namespace Compilador_L.Compilador
                     if (tokenE.token == TabelaSimbolos.ELSE)
                     {
                         casaToken(TabelaSimbolos.ELSE);
+
+                        _Celse = true;
+                        a.add("jmp " + labelFim);
+                        a.add(labelFalso + ":");
+
                         if (tokenE.token == TabelaSimbolos.ABCHAVE)
                         {
                             casaToken(TabelaSimbolos.ABCHAVE);
@@ -886,6 +909,14 @@ namespace Compilador_L.Compilador
                         }
                     }
                 }
+                if (!_Celse)
+                {
+                    a.add(labelFalso + ":");
+                }
+                else
+                {
+                    a.add(labelFim + ":");
+                }
             }
             // C -> READLN  ABPARENTESES ID FEPARENTESES PONTOVIRGULA;
             // id é um identificador de variável inteira, caractere alfanumérico ou stringg
@@ -894,8 +925,12 @@ namespace Compilador_L.Compilador
             else if (tokenE.token == TabelaSimbolos.READLN)
             {
                 casaToken(TabelaSimbolos.READLN);
+                a.add("");
+                a.add(";readln");
+
                 casaToken(TabelaSimbolos.ABPARENTESES);
                 _auxIDc = tokenE;
+                _auxIDcTemp = _auxIDc;
                 casaToken(TabelaSimbolos.ID);
                 isVetor = false; vetorUtilizado = false;
 
@@ -942,6 +977,16 @@ namespace Compilador_L.Compilador
                             //erro
                         }//fim ação semantica 7
 
+                        a.add(";caso id[int]");
+                        a.add("mov AX, " + int.Parse(_auxCONSTc.lexema) + "                ;carrega valor indexado do vetor");
+                        //a.add("mov BX, DS:[" + _auxIDc.endereco + "]       ;carrega end inicio vet identificador");
+                        if (_auxIDc.tipo == Simbolos.TIPO_INTEIRO)
+                        {
+                            a.add("imul 2                   ;multiplica por 2 valor indexado");
+                        }
+                        a.add("push AX");
+
+
                         //inicio ação sementica 12
                         vetorUtilizado = true;
                         //fim ação 12
@@ -966,6 +1011,12 @@ namespace Compilador_L.Compilador
 
                         }//fim ação semantica 10
 
+
+                        a.add(";caso id[id]");
+                        a.add("mov AX, DS:[" + _auxIDc.endereco + "]       ;carrega valor indexado do vetor");
+                        a.add("imul 2                   ;multiplica por 2 valor indexado");
+                        a.add("push AX");
+
                         //inicio ação semantica 12
                         vetorUtilizado = true;
                         //fim ação 12
@@ -973,11 +1024,151 @@ namespace Compilador_L.Compilador
 
                     casaToken(TabelaSimbolos.FECOLCHETE);
                 }
+
                 //inicio ação semantica 13
-                if (vetorUtilizado != isVetor && _auxIDc.tipo ==Simbolos.TIPO_INTEIRO)
+                if (vetorUtilizado != isVetor && _auxIDc.tipo == Simbolos.TIPO_INTEIRO)
                 {
                     Erro.ErroSemantico.Tipos(aLexico.linha);
                 }
+
+                a.add("mov SI, " + _auxIDcTemp.endereco);
+
+
+                if (isVetor == true && vetorUtilizado == false && _auxIDcTemp.tipo == Simbolos.TIPO_CARACTERE)
+                {// atribuir string a vetor de char.
+
+                    int enderecoBufferTemp = m.allocateTemporaryBuffer();
+
+                    String labelInicio = r.novoRotulo();
+                    String labelFim = r.novoRotulo();
+
+                    a.add("");
+                    a.add(";atribuir string a vetor de char.");
+                    a.add("mov DX, " + enderecoBufferTemp);
+                    a.add("mov AL, 255");
+                    a.add("mov DS:[" + enderecoBufferTemp + "], AL");
+                    a.add("mov AH, 10");
+                    a.add("int 33");
+                    a.add("mov AH, 2");
+                    a.add("mov DL, 13");
+                    a.add("int 33");
+                    a.add("mov DL, 10");
+                    a.add("int 33");
+
+                    a.add("mov DI, " + enderecoBufferTemp + 2);
+                    a.add(labelInicio + ":");
+                    a.add("mov AX, DS:[DI] ");
+                    a.add("cmp AX, 13");
+                    a.add("je " + labelFim + "");
+                    a.add("mov AH, 0");
+                    a.add("mov AL, DS:[DI]");
+                    a.add("mov DS:[SI], AX");
+                    a.add("add SI, 1 ");
+                    a.add("add DI, 1 ");
+                    a.add("jmp " + labelInicio + "");
+                    a.add(labelFim + ":");
+                    a.add("mov AH, 0");
+                    a.add("mov AL, 36");
+
+                    a.add("mov DS:[SI], AL");
+                }
+                else 
+                {
+                    int enderecoBufferTemp = m.allocateTemporaryBuffer();
+
+                    if (_auxIDcTemp.tipo == Simbolos.TIPO_INTEIRO)
+                    {
+                        String labelR0 = r.novoRotulo();
+                        String labelR1 = r.novoRotulo();
+                        String labelR2 = r.novoRotulo();
+
+                        a.add("");
+                        a.add(";atribui inteiro à variável.");
+                        a.add("mov DX, " + enderecoBufferTemp);
+                        a.add("mov AL, 255");
+                        a.add("mov DS:[" + enderecoBufferTemp + "], AL");
+                        a.add("mov AH, 10");
+                        a.add("int 33");
+                        a.add("mov AH, 2");
+                        a.add("mov DL, 13");
+                        a.add("int 33");
+                        a.add("mov DL, 10");
+                        a.add("int 33");
+
+
+                        a.add("mov DI, " + (enderecoBufferTemp + 2) + "              ;posição do string");
+                        a.add("mov AX, 0                ;acumulador");
+                        a.add("mov CX, 10               ;base decimal");
+                        a.add("mov DX, 1                ;valor sinal +");
+                        a.add("mov BH, 0");
+                        a.add("mov BL, DS:[DI]          ;caractere");
+                        a.add("cmp BX, 45               ;verifica sinal");
+                        a.add("jne " + labelR0 + "                   ;se não negativo");
+                        a.add("mov DX, -1               ;valor sinal -");
+                        a.add("add DI, 1                ;incrementa base");
+                        a.add("mov BL, DS:[DI]          ;próximo caractere");
+
+                        a.add(labelR0 + ":");
+                        a.add("push DX                  ;empilha sinal");
+                        a.add("mov dx, 0                ;reg. multiplicacao");
+
+                        a.add(labelR1 + ":");
+                        a.add("cmp BX, 13               ;verifica fim string");
+                        a.add("je " + labelR2 + "                    ;salta se fim string");
+                        a.add("imul CX                  ;mult. 10");
+                        a.add("add BX, -48              ;converte caractere");
+                        a.add("add AX, BX               ;soma valor caractere");
+                        a.add("add DI, 1                ;incrementa base");
+                        a.add("mov BH, 0");
+                        a.add("mov BL, DS:[DI]          ;próximo caractere");
+                        a.add("jmp " + labelR1 + "                   ;loop");
+
+                        a.add(labelR2 + ":");
+                        a.add("pop CX                   ;desempilha sinal");
+                        a.add("imul CX                  ;mult. sinal");
+
+                        if (vetorUtilizado)
+                        {// indexar no vetor
+                            a.add("pop BX                   ;pega posição indexada do vetor");
+                            a.add("add SI, BX               ;soma posicao com valor indexado");
+                        }
+
+                        a.add("mov DS:[SI], AX");
+                    }
+                    else
+                    {//então e caractere
+
+                        a.add("");
+                        a.add(";atribui caractere à variável.");
+
+                        //Leitura do DOS
+                        a.add("mov DX, " + enderecoBufferTemp);
+                        a.add("mov AL, 255");
+                        a.add("mov DS:[" + enderecoBufferTemp + "], AL");
+                        a.add("mov AH, 10");
+                        a.add("int 33");
+
+                        //Quebra de linha
+                        a.add("mov AH, 2");
+                        a.add("mov DL, 13");
+                        a.add("int 33");
+                        a.add("mov DL, 10");
+                        a.add("int 33");
+
+                        if (vetorUtilizado)
+                        {// indexar no vetor
+                            a.add("pop BX                   ;pega posição indexada do vetor");
+                            a.add("add SI, BX               ;soma posicao com valor indexado");
+                        }
+
+                        a.add("mov DI, " + (enderecoBufferTemp + 2) + "             ;posição do string");
+                        a.add("mov AH, 0                ;acumulador");
+                        a.add("mov AL, DS:[DI]          ;caractere");
+                        a.add("mov DS:[SI], AL");
+                    }
+
+                }
+           
                 //fim ação semtnica 13
                 casaToken(TabelaSimbolos.FEPARENTESES);
                 casaToken(TabelaSimbolos.PONTOVIRGULA);
@@ -989,14 +1180,20 @@ namespace Compilador_L.Compilador
                 if (tokenE.token == TabelaSimbolos.WRITE)
                 {
                     casaToken(TabelaSimbolos.WRITE);
+                    a.add("");
+                    a.add(";write");
+                    _CquebraLinha = false;
                 }
                 else
                 {
                     casaToken(TabelaSimbolos.WRITELN);
+                    a.add("");
+                    a.add(";writeln");
+                    _CquebraLinha = true;
                 }
 
                 casaToken(TabelaSimbolos.ABPARENTESES);
-
+                m.resetarTemporario();
                 E(_C);
 
                 if (_C.tipo == Simbolos.TIPO_LOGICO)
@@ -1004,14 +1201,177 @@ namespace Compilador_L.Compilador
                     Erro.ErroSemantico.Tipos(aLexico.linha);
                 }
 
+                if (_C.tipo == Simbolos.TIPO_STRING || _C.tamanho != Simbolos.ESCALAR)
+                {
+                    a.add("");
+                    a.add(";printar string/vet ");
+                    a.add("mov DX, " + _C.endereco);
+                    a.add("mov AH, 9");
+                    a.add("int 033");
+                }
+                else
+                {
+                    String labelR0 = r.novoRotulo();
+                    String labelR1 = r.novoRotulo();
+                    String labelR2 = r.novoRotulo();
+                    int stringEndereco = m.alocarTemporarioString();
+
+                    a.add("mov DI, " + stringEndereco + " ;end. string temp");
+
+                    if (_C.tipo == Simbolos.TIPO_INTEIRO)
+                    {
+                        a.add("");
+                        a.add(";printar interio");
+                        a.add("mov AX, DS:[" + _C.endereco + "]");
+                    }
+                    else
+                    {
+                        a.add("");
+                        a.add(";printar caractere");
+                        a.add("mov AL, DS:[" + _C.endereco + "]");
+                        a.add("cbw");
+                    }
+
+                    a.add("mov CX, 0 ;contador");
+                    a.add("cmp AX,0 ;verifica sinal");
+                    a.add("jge " + labelR0 + " ;salta se número positivo");
+                    a.add("mov BL, 45 ;senão, escreve sinal –");
+                    a.add("mov DS:[DI], BL");
+                    a.add("add DI, 1 ;incrementa índice");
+                    a.add("neg AX ;toma módulo do número");
+
+                    a.add(labelR0 + ":");
+                    a.add("mov BX, 10 ;divisor");
+
+                    a.add(labelR1 + ":");
+                    a.add("add CX, 1 ;incrementa contador");
+                    a.add("mov DX, 0 ;estende 32bits p/ div.");
+                    a.add("idiv BX ;divide DXAX por BX");
+                    a.add("push DX ;empilha valor do resto");
+                    a.add("cmp AX, 0 ;verifica se quoc. é 0");
+                    a.add("jne " + labelR1 + " ;se não é 0, continua");
+
+                    a.add(";agora, desemp. os valores e escreve o string");
+                    a.add(labelR2 + ":");
+                    a.add("pop DX ;desempilha valor");
+                    a.add("add DX, 48 ;transforma em caractere");
+                    a.add("mov DS:[DI],DL ;escreve caractere");
+                    a.add("add DI, 1 ;incrementa base");
+                    a.add("add CX, -1 ;decrementa contador");
+                    a.add("cmp CX, 0 ;verifica pilha vazia");
+                    a.add("jne " + labelR2 + " ;se não pilha vazia, loop");
+
+                    a.add(";grava fim de string");
+                    a.add("mov DL, 36 ;fim de string");
+                    a.add("mov DS:[DI], DL ;grava '$'");
+
+                    a.add(";exibe string");
+                    a.add("mov DX, " + stringEndereco);
+                    a.add("mov AH, 9");
+                    a.add("int 33");
+
+                    if (_CquebraLinha)
+                    {
+                        a.add("");
+                        a.add(";quebra de linha");
+                        a.add("mov DX, 13");
+                        a.add("mov AH, 2");
+                        a.add("int 33");
+                        a.add("mov DX, 10");
+                        a.add("int 33");
+                    }
+                }
+
                 while (tokenE.token == TabelaSimbolos.VIRGULA)
                 {
                     casaToken(TabelaSimbolos.VIRGULA);
+                    m.resetarTemporario();
                     E(_C);
 
                     if (_C.tipo == Simbolos.TIPO_LOGICO)
                     {
                         Erro.ErroSemantico.Tipos(aLexico.linha);
+                    }
+
+                    if (_C.tipo == Simbolos.TIPO_STRING || _C.tamanho != Simbolos.ESCALAR)
+                    {
+                        a.add("");
+                        a.add(";printar string/vet");
+                        a.add("mov DX, " + _C.endereco);
+                        a.add("mov AH, 9");
+                        a.add("int 033");
+                    }
+                    else
+                    {
+                        String labelR0 = r.novoRotulo();
+                        String labelR1 = r.novoRotulo();
+                        String labelR2 = r.novoRotulo();
+                        int stringEndereco = m.alocarTemporarioString();
+
+                        a.add("mov DI, " + stringEndereco + " ;end. string temp");
+
+                        if (_C.tipo == Simbolos.TIPO_INTEIRO)
+                        {
+                            a.add("");
+                            a.add(";printar interio");
+                            a.add("mov AX, DS:[" + _C.endereco + "]");
+                        }
+                        else
+                        {
+                            a.add("");
+                            a.add(";printar caractere");
+                            a.add("mov AL, DS:[" + _C.endereco + "]");
+                            a.add("cbw");
+                        }
+
+                        a.add("mov CX, 0 ;contador");
+                        a.add("cmp AX,0 ;verifica sinal");
+                        a.add("jge " + labelR0 + " ;salta se número positivo");
+                        a.add("mov BL, 45 ;senão, escreve sinal –");
+                        a.add("mov DS:[DI], BL");
+                        a.add("add DI, 1 ;incrementa índice");
+                        a.add("neg AX ;toma módulo do número");
+
+                        a.add(labelR0 + ":");
+                        a.add("mov BX, 10 ;divisor");
+
+                        a.add(labelR1 + ":");
+                        a.add("add CX, 1 ;incrementa contador");
+                        a.add("mov DX, 0 ;estende 32bits p/ div.");
+                        a.add("idiv BX ;divide DXAX por BX");
+                        a.add("push DX ;empilha valor do resto");
+                        a.add("cmp AX, 0 ;verifica se quoc. é 0");
+                        a.add("jne " + labelR1 + " ;se não é 0, continua");
+
+                        a.add(";agora, desemp. os valores e escreve o string");
+                        a.add(labelR2 + ":");
+                        a.add("pop DX ;desempilha valor");
+                        a.add("add DX, 48 ;transforma em caractere");
+                        a.add("mov DS:[DI],DL ;escreve caractere");
+                        a.add("add DI, 1 ;incrementa base");
+                        a.add("add CX, -1 ;decrementa contador");
+                        a.add("cmp CX, 0 ;verifica pilha vazia");
+                        a.add("jne " + labelR2 + " ;se não pilha vazia, loop");
+
+                        a.add(";grava fim de string");
+                        a.add("mov DL, 36 ;fim de string");
+                        a.add("mov DS:[DI], DL ;grava '$'");
+
+                        a.add(";exibe string");
+                        a.add("mov DX, " + stringEndereco);
+                        a.add("mov AH, 9");
+                        a.add("int 33");
+
+                        if (_CquebraLinha)
+                        {
+                            a.add("");
+                            a.add(";quebra de linha");
+                            a.add("mov DX, 13");
+                            a.add("mov AH, 2");
+                            a.add("int 33");
+                            a.add("mov DX, 10");
+                            a.add("int 33");
+                        }
                     }
                 }
                 casaToken(TabelaSimbolos.FEPARENTESES);
@@ -1022,6 +1382,8 @@ namespace Compilador_L.Compilador
             else
             {
                 casaToken(TabelaSimbolos.PONTOVIRGULA);
+                a.add("");
+                a.add("; Ponto virgula");
             }
         }
         // E -> ES [ ( IGUAL(aceita vetor, aceita string ) | MENOR | MAIOR | MENORIGUAL | MAIORIGUAL | DIFERENTE ) ES ]
