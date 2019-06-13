@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28010.2003
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compilador-L", "Compilador-L\Compilador-L.csproj", "{A50B37AC-F5ED-4BE6-84DA-038E75C17E99}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Otimizador-L", "Otimizador\Otimizador-L.csproj", "{639707F7-1C3C-47DD-9854-D9702BD00AF0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{A50B37AC-F5ED-4BE6-84DA-038E75C17E99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A50B37AC-F5ED-4BE6-84DA-038E75C17E99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A50B37AC-F5ED-4BE6-84DA-038E75C17E99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{639707F7-1C3C-47DD-9854-D9702BD00AF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{639707F7-1C3C-47DD-9854-D9702BD00AF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{639707F7-1C3C-47DD-9854-D9702BD00AF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{639707F7-1C3C-47DD-9854-D9702BD00AF0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
