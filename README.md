@@ -5,7 +5,9 @@ Trabalho de compiladores PUC-MG desenvolvido em C# usando Visual Studio 2017.
 ## Alunos/Professor
 
 [Adhonay Junior](https://github.com/adhonay) - Aluno contato Git
+
 [Izabela Costa](https://github.com/izabelacGoncalves) - Aluna contato Git
+
 [Alexei](http://portal.pucminas.br/pos/eletrica/index-link.php?arquivo=docente&pagina=4124&id=254) - Professor
 
 ## Avaliação/Notas.
