@@ -1,4 +1,4 @@
-# Trabalho Compiladores 
+# Trabalho Compilador
 
 Trabalho de compiladores PUC-MG desenvolvido em C# usando Visual Studio 2017.
 
