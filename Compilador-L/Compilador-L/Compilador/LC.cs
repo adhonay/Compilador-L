@@ -14,6 +14,7 @@ namespace Compilador_L.Compilador
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Digite o nome do arquivo: ");
             var arquivo = Console.ReadLine();
 
             if (File.Exists(arquivo))

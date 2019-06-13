@@ -68,9 +68,25 @@
     <None Include="Documentos\Descrição\tp4.pdf" />
     <None Include="Documentos\Exemplos\exemplo1.l" />
     <None Include="Documentos\Exemplos\exemplo2.l" />
+    <None Include="Documentos\Exemplos\t1.l" />
+    <None Include="Documentos\Exemplos\t2.l" />
+    <None Include="Documentos\Exemplos\t3.l" />
+    <None Include="Documentos\Exemplos\t4.l" />
+    <None Include="Documentos\Exemplos\t5.l" />
+    <None Include="Documentos\Exemplos\t6.l" />
+    <None Include="Documentos\Exemplos\t7.l" />
+    <None Include="Documentos\Exemplos\t8.l" />
+    <None Include="Documentos\Masm\ML.ERR" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="Documentos\Masm\DOSXNT.EXE" />
+    <Content Include="Documentos\Masm\EXE2BIN.EXE" />
+    <Content Include="Documentos\Masm\LIB.EXE" />
+    <Content Include="Documentos\Masm\LINK.EXE" />
+    <Content Include="Documentos\Masm\MAKE.EXE" />
+    <Content Include="Documentos\Masm\MASM.EXE" />
+    <Content Include="Documentos\Masm\ML.EXE" />
     <Content Include="Documentos\Parte 1\Autômato.JPG" />
     <Content Include="Documentos\Parte 1\Gramática.JPG" />
     <Content Include="Documentos\Parte 1\Gramática.txt" />

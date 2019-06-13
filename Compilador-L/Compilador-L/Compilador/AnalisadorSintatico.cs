@@ -522,7 +522,7 @@ namespace Compilador_L.Compilador
             Simbolos _auxCONSTc = new Simbolos("", Byte.MaxValue);
             Simbolos _auxIDc = new Simbolos("", Byte.MaxValue);
             Simbolos _auxIDcTemp = new Simbolos("", Byte.MaxValue);
-            TemporarioSimbolo _Ctemp = new TemporarioSimbolo(); // copia de _C para caso seja vetor copiar tamanho.
+            int _Ctemp = 0; // copia de _C para caso seja vetor copiar tamanho.
             Boolean isVetor = false, vetorUtilizado = false, entrouStep, _Celse, _CquebraLinha ;
 
             //C->ID [ ABCOLCHETE E FECOLCHETE ] IGUAL E PONTOVIRGULA
@@ -556,7 +556,7 @@ namespace Compilador_L.Compilador
                     casaToken(TabelaSimbolos.ABCOLCHETE);
                    // m.resetarTemporario();
                     E(_C);
-                    _Ctemp = _C;
+                    _Ctemp = _C.endereco;
                     //inicio açao semantica 3
                     if (_C.tipo != Simbolos.TIPO_INTEIRO || _C.tamanho != Simbolos.ESCALAR )
                     {
@@ -625,12 +625,13 @@ namespace Compilador_L.Compilador
                     {
                         a.add("");
                         a.add(";atribuição a vetor de inteiro");
-                        a.add("mov AX, DS:[" + _Ctemp.endereco + "]          ;carrega valor indexado do vetor");
+                        a.add("mov AX, DS:[" + _Ctemp + "]          ;carrega valor indexado do vetor");
                         a.add("mov BX, DS:[" + _auxIDc.endereco + "]       ;carrega end inicio vet identificador");
-                        a.add("imul 2                   ;multiplica por 2 valor indexado");
+                        a.add("add AX, AX                   ;multiplica por 2 valor indexado");
                         a.add("add AX, BX               ;soma os dois valores, ax tem o end pos vet para salvar");
                         a.add("mov BX, DS:[" + _C.endereco + "]          ;carrega valor do end exp de igualdade");
-                        a.add("mov DS:[AX], BX          ;armazena na pos vet o valor da exp recebida");
+                        a.add("mov SI, AX ; move enderreço de acesso ao vetor para SI");
+                        a.add("mov DS:[SI], BX          ;armazena na pos vet o valor da exp recebida");
                     }
                     else if (_auxIDc.tamanho == Simbolos.ESCALAR && vetorUtilizado == false)//integer id
                     {
@@ -647,11 +648,12 @@ namespace Compilador_L.Compilador
                     {
                         a.add("");
                         a.add(";atribuição a pos vetor de caractere");
-                        a.add("mov AX, DS:[" + _Ctemp.endereco + "]          ;carrega valor indexado do vetor");
+                        a.add("mov AX, DS:[" + _Ctemp + "]          ;carrega valor indexado do vetor");
                         a.add("mov BX, DS:[" + _auxIDc.endereco + "]       ;carrega end inicio vet identificador");
                         a.add("add AX, BX               ;soma os dois valores, ax tem o end pos vet para salvar");
                         a.add("mov BX, DS:[" + _C.endereco + "]          ;carrega valor do end exp de igualdade");
-                        a.add("mov DS:[AX], BX          ;armazena na pos vet o valor da exp recebida");
+                        a.add("mov SI, AX ; move enderreço de acesso ao vetor para SI");
+                        a.add("mov DS:[SI], BX          ;armazena na pos vet o valor da exp recebida");
                     }
                     else if (_auxIDc.tamanho != Simbolos.ESCALAR && vetorUtilizado == false)// char id(vet)
                     {
@@ -718,7 +720,7 @@ namespace Compilador_L.Compilador
                 casaToken(TabelaSimbolos.IGUAL);
                 //m.resetarTemporario();
                 E(_C);
-                _Ctemp = _C;
+                _Ctemp = _C.endereco;
                 //inicio ação semantica 6
                 if (_C.tipo != Simbolos.TIPO_INTEIRO || _C.tamanho > 0)
                 {
@@ -763,7 +765,7 @@ namespace Compilador_L.Compilador
                 a.add("");
                 a.add(";Repetição For");
 
-                a.add("mov AX, DS:[" + _Ctemp.endereco + "]          ;copia valor do E dps da igualdade ");
+                a.add("mov AX, DS:[" + _Ctemp + "]          ;copia valor do E dps da igualdade ");
                 a.add("mov DS:[" + _auxIDc.endereco + "], AX       ;armazena o valor no id corespondente");
 
                 String labelInicio = r.novoRotulo();
@@ -983,7 +985,7 @@ namespace Compilador_L.Compilador
                         //a.add("mov BX, DS:[" + _auxIDc.endereco + "]       ;carrega end inicio vet identificador");
                         if (_auxIDc.tipo == Simbolos.TIPO_INTEIRO)
                         {
-                            a.add("imul 2                   ;multiplica por 2 valor indexado");
+                            a.add("add AX, AX                   ;multiplica por 2 valor indexado");
                         }
                         a.add("push AX");
 
@@ -1015,7 +1017,7 @@ namespace Compilador_L.Compilador
 
                         a.add(";caso id[id]");
                         a.add("mov AX, DS:[" + _auxIDc.endereco + "]       ;carrega valor indexado do vetor");
-                        a.add("imul 2                   ;multiplica por 2 valor indexado");
+                        a.add("add AX, AX                   ;multiplica por 2 valor indexado");
                         a.add("push AX");
 
                         //inicio ação semantica 12
@@ -1194,7 +1196,7 @@ namespace Compilador_L.Compilador
                 }
 
                 casaToken(TabelaSimbolos.ABPARENTESES);
-                //m.resetarTemporario();
+               // m.resetarTemporario();
                 E(_C);
 
                 if (_C.tipo == Simbolos.TIPO_LOGICO)
@@ -1270,19 +1272,8 @@ namespace Compilador_L.Compilador
                     a.add("mov DX, " + stringEndereco);
                     a.add("mov AH, 9");
                     a.add("int 33");
-
-                    if (_CquebraLinha)
-                    {
-                        a.add("");
-                        a.add(";quebra de linha");
-                        a.add("mov DX, 13");
-                        a.add("mov AH, 2");
-                        a.add("int 33");
-                        a.add("mov DX, 10");
-                        a.add("int 33");
-                    }
                 }
-
+                
                 while (tokenE.token == TabelaSimbolos.VIRGULA)
                 {
                     casaToken(TabelaSimbolos.VIRGULA);
@@ -1362,18 +1353,17 @@ namespace Compilador_L.Compilador
                         a.add("mov DX, " + stringEndereco);
                         a.add("mov AH, 9");
                         a.add("int 33");
-
-                        if (_CquebraLinha)
-                        {
-                            a.add("");
-                            a.add(";quebra de linha");
-                            a.add("mov DX, 13");
-                            a.add("mov AH, 2");
-                            a.add("int 33");
-                            a.add("mov DX, 10");
-                            a.add("int 33");
-                        }
-                    }
+                    }                                    
+                }
+                if (_CquebraLinha)
+                {
+                    a.add("");
+                    a.add(";quebra de linha");
+                    a.add("mov DX, 13");
+                    a.add("mov AH, 2");
+                    a.add("int 33");
+                    a.add("mov DX, 10");
+                    a.add("int 33");
                 }
                 casaToken(TabelaSimbolos.FEPARENTESES);
                 casaToken(TabelaSimbolos.PONTOVIRGULA);
@@ -1842,7 +1832,7 @@ namespace Compilador_L.Compilador
                     var removeAspas = _auxCONSTf.lexema.TrimStart('"').TrimEnd('"');
                     a.add("byte \"" + removeAspas + "\" ;var. string");
                     a.add("dseg ENDS");
-                    _F.endereco = m.alocarString(_auxCONSTf.lexema.Length);
+                    _F.endereco = m.alocarString(_auxCONSTf.lexema.Length-2);
                 }
                
                else if (_auxCONSTf.tipo == Simbolos.TIPO_CARACTERE || _auxCONSTf.tipo == Simbolos.TIPO_HEXADECIMAL)
@@ -1937,7 +1927,7 @@ namespace Compilador_L.Compilador
                     if (_auxIDf.tipo == Simbolos.TIPO_INTEIRO)
                     {
                         _F.endereco = m.alocarTemporarioInteiro();
-                        a.add("imul 2                   ;multiplica por 2 valor indexado");
+                        a.add("add AX, AX                   ;multiplica por 2 valor indexado");
                     }
                     else
                     {
