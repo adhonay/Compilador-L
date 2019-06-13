@@ -28,12 +28,19 @@ Nota final: 33 pontos em 30.
 ## Atenção
 
 *O trabalho em questão e para AJUDAR no entendimento.
+
 *Não COPIAR entenda e faça o seu, essa matéria e FODA de boa.
+
 *O código contém vários easter eggs ocultos.
+
 *Caso copie o código e na hora dos testes o compilador printar “coisas ousadas” para seu professor não nos responsabilizamos kkk.
+
 *Use e abuse da ideia da implementação e faça a sua ou até melhor.
+
 *Fazer o trabalho antes da prova ajuda muito para a mesma.
+
 *Despois de tudo pronto e funcionando a satisfação e muito boa. ACREDITE!
+
 *Observações dadas, bom trabalho e boa sorte!
 
 
