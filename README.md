@@ -39,7 +39,7 @@ Nota final: 33 pontos em 30.
 
 * Fazer o trabalho antes da prova ajuda muito para a mesma.
 
-* Despois de tudo pronto e funcionando a satisfação e muito boa. ACREDITE!
+* Depois de tudo pronto e funcionando a satisfação e muito boa. ACREDITE!
 
 * Observações dadas, bom trabalho e boa sorte!
 
