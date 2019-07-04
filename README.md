@@ -31,7 +31,7 @@ Nota final: 33 pontos em 30.
 
 * Não COPIAR entenda e faça o seu, essa matéria e FODA de boa.
 
-* O trabalho contém alguns easter eggs ocultos kk.
+* O trabalho contém alguns easter eggs ocultos kk, mas nada que atrapalhe no entendimento do mesmo.
 
 * Caso copie o código e na hora dos testes o compilador printar “coisas ousadas” para seu professor não nos responsabilizamos kkk.
 
