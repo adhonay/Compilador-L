@@ -14,15 +14,15 @@ Trabalho de compiladores PUC-MG desenvolvido em C# usando Visual Studio 2017.
 
 ```
 Parte 1 (Analisador Léxico e Sintático) – 10 Pontos.
-Nota do trabalho: 10 Pontos.
+Nota dessa Parte: 10 Pontos.
 
 Parte 2 (Analisador Semântico e Geração de código) – 20 Pontos.
-Nota do trabalho: 20 Pontos.
+Nota dessa Parte: 20 Pontos.
 
 Ponto Extra (Otimização) –? Pontos 
-Nota do trabalho: 3 Pontos.
+Nota do Extra: 3 Pontos.
 
-Nota final: 33 pontos em 30.
+Nota final do trabalho: 33 pontos em 30.
 ```
 
 ## Observações
