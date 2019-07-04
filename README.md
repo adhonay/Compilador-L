@@ -31,7 +31,7 @@ Nota final do trabalho: 33 pontos em 30.
 
 * Recomendamos não copiar, entenda e faça o seu pois essa matéria é FODA de boa.
 
-* O trabalho também contém alguns easter eggs ocultos(caso apenas copiar vai passar vergonha na hora de apresentar kk), mas nada que atrapalhe no entendimento do mesmo.
+* O trabalho contém alguns easter eggs ocultos(caso apenas copiar vai passar vergonha na hora de apresentar kk).
 
 * Use e abuse da ideia da implementação é faça a sua ou até melhor.
 
