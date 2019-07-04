@@ -25,13 +25,13 @@ Nota do trabalho: 3 Pontos.
 Nota final: 33 pontos em 30.
 ```
 
-## Atenção
+## Observações
 
 * O trabalho em questão e para AJUDAR no entendimento.
 
 * Não COPIAR entenda e faça o seu, essa matéria e FODA de boa.
 
-* O código contém vários easter eggs ocultos.
+* O trabalho contém alguns easter eggs ocultos kk.
 
 * Caso copie o código e na hora dos testes o compilador printar “coisas ousadas” para seu professor não nos responsabilizamos kkk.
 
