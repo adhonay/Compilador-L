@@ -2,6 +2,14 @@
 
 Trabalho de compiladores PUC-MG desenvolvido em C# usando Visual Studio 2017.
 
+## Autômato
+
+![alt text](https://github.com/adhonay/Compilador-L/blob/master/Compilador-L/Compilador-L/Documentos/Parte%201/Aut%C3%B4mato.JPG)
+
+## Gramática
+![alt text](https://github.com/adhonay/Compilador-L/blob/master/Compilador-L/Compilador-L/Documentos/Parte%201/Gramática.JPG)
+
+
 ## Alunos/Professor
 
 [Adhonay Junior](https://github.com/adhonay) - Aluno contato Git
